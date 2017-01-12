@@ -1,0 +1,160 @@
+#
+# Copyright 2017 Blockie AB
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+_info:
+    title: Docker container management.
+
+_dep_install:
+    _info:
+        title: Verify dependencies for this module.
+        desc: |
+            If docker is not already installed it will
+            download and install the latest Docker Engine from Docker and
+            add the targetuser to the docker group.
+    _env:
+        - targetuser: ${targetuser:-${SSHUSER:-$USER}}
+        - CMD: DOCKER_VOLUME_DEP_INSTALL -- "${targetuser}"
+
+install:
+    _info:
+        title: Install the latest Docker Engine.
+        desc: |
+            Downloads and installs the latest Docker Engine from Docker.
+            Also adds the targetuser to the docker group.
+            Will reinstall if already installed.
+    _env:
+        - targetuser: ${targetuser:-${SSHUSER:-$USER}}
+        - CMD: DOCKER_VOLUME_INSTALL -- "${targetuser}"
+
+deploy:
+    _info:
+        title: Deploy volumes defined in conf file
+        desc: |
+            Read conf file to create all volumes
+            defined and optionally populate with data.
+            Warning: this could destroy volumes data!
+    _env:
+        - conffile:
+        - CMD: DOCKER_VOLUME_DEPLOY -- ${conffile-}
+
+undeploy:
+    _info:
+        title: Undeploy (destroy) volumes defined in conf file
+        desc: |
+            Warning: this will really destroy all volumes and their data!
+    _env:
+        - conffile:
+        - CMD: DOCKER_VOLUME_UNDEPLOY -- ${conffile-}
+
+statuses:
+    _info:
+        title: Check statuses for volumes defined in conf file
+    _env:
+        - conffile:
+        - CMD: DOCKER_VOLUME_STATUSES -- ${conffile-}
+
+create:
+    _info:
+        title: Create a volume
+    _env:
+        - name: ${name-}
+        - driver: ${driver-}
+        - opts: ${opts-}
+        - labels: ${labels-}
+        - CMD: DOCKER_VOLUME_CREATE -- ${name-} ${driver-} ${opts-} ${labels-}
+
+chmod:
+    _info:
+        title: Set the permissions and ownership of the mountpoint of a volume.
+        desc: |
+            This is done from within a container who will mount the volume.
+    _env:
+        - name: ${name-}
+        - chmod: ${chmod-}
+        - chown: ${chown-}
+        - CMD: DOCKER_VOLUME_CHMOD -- ${name-} ${chmod-} ${chown-}
+
+status:
+    _info:
+        title: Check simple status of volume
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUME_STATUS -- ${name-}
+
+exists:
+    _info:
+        title: Check if a volume exists
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUME_EXISTS -- ${name-}
+
+filelist:
+    _info:
+        title: List all files inside a volume
+    _env:
+        - CMD: DOCKER_VOLUME_FILELIST
+
+rm:
+    _info:
+        title: Remove a volume
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUME_RM -- ${name-}
+
+ls:
+    _info:
+        title: List all volumes
+    _env:
+        - CMD: DOCKER_VOLUME_LS
+
+inspect:
+    _info:
+        title: Inspect a volume
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUME_INSPECT -- ${name-}
+
+empty:
+    _info:
+        title: Delete all files in a volume
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUME_EMPTY -- ${name-}
+
+restore:
+    _info:
+        title: Restores a snapshot into a volume, possibly deletes all files first
+        desc: |
+            Archive, either path to tar.gz file,
+            path to a directory to restore from
+            or "-" for stdin.
+    _env:
+        - name: ${name-}
+        - archive: ${archive-}
+        - rmrf: ${rmrf-}
+        - CMD: DOCKER_VOLUME_RESTORE -- ${name-} ${archive-} ${rmrf-}
+
+snapshot:
+    _info:
+        title: Take a snapshot of a volume
+        desc: |
+            Archive is either path to a tar.gz file,
+            path to a directory to store snapshot in
+            or "-" for stdout.
+    _env:
+        - name: ${name-}
+        - archive: ${archive-}
+        - CMD: DOCKER_VOLUME_SNAPSHOT -- ${name-} ${archive-}

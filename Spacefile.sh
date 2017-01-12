@@ -17,7 +17,7 @@
 clone os file docker conf string
 
 #======================
-# DOCKER_VOLUME_DEP_INSTALL
+# DOCKER_VOLUMES_DEP_INSTALL
 #
 # Verify that Docker Engine is
 # installed otherwise install it.
@@ -33,7 +33,7 @@ clone os file docker conf string
 #   1: failure
 #
 #======================
-DOCKER_VOLUME_DEP_INSTALL()
+DOCKER_VOLUMES_DEP_INSTALL()
 {
     SPACE_SIGNATURE="targetuser"
     SPACE_CMDDEP="PRINT OS_IS_INSTALLED DOCKER_INSTALL"
@@ -49,7 +49,7 @@ DOCKER_VOLUME_DEP_INSTALL()
 }
 
 #======================
-# DOCKER_VOLUME_INSTALL
+# DOCKER_VOLUMES_INSTALL
 #
 # Install latest Docker and make it available to the user.
 #
@@ -64,7 +64,7 @@ DOCKER_VOLUME_DEP_INSTALL()
 #   1: failure
 #
 #======================
-DOCKER_VOLUME_INSTALL()
+DOCKER_VOLUMES_INSTALL()
 {
     SPACE_SIGNATURE="targetuser"
     SPACE_CMDDEP="PRINT DOCKER_INSTALL"
@@ -76,7 +76,7 @@ DOCKER_VOLUME_INSTALL()
 }
 
 #=====================
-# DOCKER_VOLUME_CREATE
+# DOCKER_VOLUMES_CREATE
 #
 # docker volume create.
 #
@@ -90,7 +90,7 @@ DOCKER_VOLUME_INSTALL()
 #   non-zero on error
 #
 #=====================
-DOCKER_VOLUME_CREATE()
+DOCKER_VOLUMES_CREATE()
 {
     SPACE_SIGNATURE="name [driver opts label]"
     SPACE_CMDDEP="PRINT"
@@ -114,7 +114,7 @@ DOCKER_VOLUME_CREATE()
 }
 
 #=======================
-# DOCKER_VOLUME_FILELIST
+# DOCKER_VOLUMES_FILELIST
 #
 # List all files inside a volume from within a container.
 #
@@ -130,11 +130,11 @@ DOCKER_VOLUME_CREATE()
 #   File list
 #
 #======================
-DOCKER_VOLUME_FILELIST()
+DOCKER_VOLUMES_FILELIST()
 {
     SPACE_SIGNATURE="name"
     # We have to chain to another cmd since we want to wrap it.
-    SPACE_CMD="_DOCKER_VOLUME_FILELIST_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_FILELIST_IMPL"
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
@@ -150,12 +150,12 @@ DOCKER_VOLUME_FILELIST()
 }
 
 #=============================
-# _DOCKER_VOLUME_FILELIST_IMPL
+# _DOCKER_VOLUMES_FILELIST_IMPL
 #
-# The implementation for DOCKER_VOLUME_FILELIST.
+# The implementation for DOCKER_VOLUMES_FILELIST.
 #
 #=============================
-_DOCKER_VOLUME_FILELIST_IMPL()
+_DOCKER_VOLUMES_FILELIST_IMPL()
 {
     SPACE_SIGNATURE="targetdir"
     SPACE_CMDDEP="PRINT"
@@ -172,7 +172,7 @@ _DOCKER_VOLUME_FILELIST_IMPL()
 }
 
 #======================
-# DOCKER_VOLUME_CHMOD
+# DOCKER_VOLUMES_CHMOD
 #
 # Set the permissions of the mountpoint of a volume.
 # This function will mount the volume inside a container and
@@ -189,11 +189,11 @@ _DOCKER_VOLUME_FILELIST_IMPL()
 #   non-zero on error
 #
 #=====================
-DOCKER_VOLUME_CHMOD()
+DOCKER_VOLUMES_CHMOD()
 {
     SPACE_SIGNATURE="name chmod [chown]"
     # We have to chain to another cmd since we want to wrap it.
-    SPACE_CMD="_DOCKER_VOLUME_CHMOD_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_CHMOD_IMPL"
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
@@ -215,12 +215,12 @@ DOCKER_VOLUME_CHMOD()
 }
 
 #=====================
-# _DOCKER_VOLUME_CHMOD_IMPL
+# _DOCKER_VOLUMES_CHMOD_IMPL
 #
-# The implementation for DOCKER_VOLUME_CHMOD.
+# The implementation for DOCKER_VOLUMES_CHMOD.
 #
 #=====================
-_DOCKER_VOLUME_CHMOD_IMPL()
+_DOCKER_VOLUMES_CHMOD_IMPL()
 {
     SPACE_SIGNATURE="targetdir chmod [chown]"
     SPACE_CMDDEP="PRINT"
@@ -251,7 +251,7 @@ _DOCKER_VOLUME_CHMOD_IMPL()
 }
 
 #=====================
-# DOCKER_VOLUME_STATUS
+# DOCKER_VOLUMES_STATUS
 #
 # Get simple status of a volume.
 #
@@ -259,7 +259,7 @@ _DOCKER_VOLUME_CHMOD_IMPL()
 #   $@: volume name
 #
 #=====================
-DOCKER_VOLUME_STATUS()
+DOCKER_VOLUMES_STATUS()
 {
     SPACE_SIGNATURE="name"
     SPACE_CMDDEP="PRINT"
@@ -278,7 +278,7 @@ DOCKER_VOLUME_STATUS()
 }
 
 #=====================
-# DOCKER_VOLUME_RM
+# DOCKER_VOLUMES_RM
 #
 # Remove one or more docker volumes.
 #
@@ -286,7 +286,7 @@ DOCKER_VOLUME_STATUS()
 #   $@: volume names
 #
 #=====================
-DOCKER_VOLUME_RM()
+DOCKER_VOLUMES_RM()
 {
     SPACE_SIGNATURE="name [name]"
     SPACE_CMDDEP="PRINT"
@@ -296,7 +296,7 @@ DOCKER_VOLUME_RM()
 }
 
 #=====================
-# DOCKER_VOLUME_LS
+# DOCKER_VOLUMES_LS
 #
 # List docker volumes
 #
@@ -304,14 +304,14 @@ DOCKER_VOLUME_RM()
 #   $@: options
 #
 #=====================
-DOCKER_VOLUME_LS()
+DOCKER_VOLUMES_LS()
 {
     SPACE_SIGNATURE="[options]"
     docker volume ls "${@}"
 }
 
 #=====================
-# DOCKER_VOLUME_EXISTS
+# DOCKER_VOLUMES_EXISTS
 #
 # Check so that a volume exists.
 #
@@ -319,7 +319,7 @@ DOCKER_VOLUME_LS()
 #   $1: name of volume
 #
 #=====================
-DOCKER_VOLUME_EXISTS()
+DOCKER_VOLUMES_EXISTS()
 {
     SPACE_SIGNATURE="name"
 
@@ -334,7 +334,7 @@ DOCKER_VOLUME_EXISTS()
 }
 
 #=====================
-# DOCKER_VOLUME_INSPECT
+# DOCKER_VOLUMES_INSPECT
 #
 # Run docker volume inspect
 #
@@ -342,14 +342,14 @@ DOCKER_VOLUME_EXISTS()
 #   $@: options
 #
 #=====================
-DOCKER_VOLUME_INSPECT()
+DOCKER_VOLUMES_INSPECT()
 {
     SPACE_SIGNATURE="name [args]"
     docker volume inspect "${@}"
 }
 
 #======================
-# DOCKER_VOLUME_RESTORE
+# DOCKER_VOLUMES_RESTORE
 #
 # Restore a tar.gz archive or local dir into a volume,
 # possibly delete all files in volume first.
@@ -376,10 +376,10 @@ DOCKER_VOLUME_INSPECT()
 #   non-zero on error
 #
 #=====================
-DOCKER_VOLUME_RESTORE()
+DOCKER_VOLUMES_RESTORE()
 {
     SPACE_SIGNATURE="name archive.tar.gz|dir|- [empty preservepermissions]"
-    SPACE_CMD="_DOCKER_VOLUME_RESTORE_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_RESTORE_IMPL"
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
@@ -410,7 +410,7 @@ DOCKER_VOLUME_RESTORE()
         fi
     else
         if [ -d "${archive}" ]; then
-            SPACE_CMDOUTER="_DOCKER_VOLUME_RESTORE_OUTER"
+            SPACE_CMDOUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
             SPACE_CMDOUTERARGS="${archive}"
             SPACE_CMDREDIR="<\${archive}"
         else
@@ -423,12 +423,12 @@ DOCKER_VOLUME_RESTORE()
 
 #=============================
 #
-# _DOCKER_VOLUME_RESTORE_OUTER
+# _DOCKER_VOLUMES_RESTORE_OUTER
 #
 # Helper to archive directory into STDIN.
 #
 #=============================
-_DOCKER_VOLUME_RESTORE_OUTER()
+_DOCKER_VOLUMES_RESTORE_OUTER()
 {
     SPACE_SIGNATURE="dir"
 
@@ -445,12 +445,12 @@ _DOCKER_VOLUME_RESTORE_OUTER()
 }
 
 #=====================
-# _DOCKER_VOLUME_RESTORE_IMPL
+# _DOCKER_VOLUMES_RESTORE_IMPL
 #
-# Used dy DOCKER_VOLUME_RESTORE command
+# Used dy DOCKER_VOLUMES_RESTORE command
 #
 #=====================
-_DOCKER_VOLUME_RESTORE_IMPL()
+_DOCKER_VOLUMES_RESTORE_IMPL()
 {
     SPACE_SIGNATURE="targetdir empty preservepermissions"
     SPACE_CMDDEP="PRINT FILE_GET_PERMISSIONS FILE_RESTORE_PERMISSIONS"
@@ -499,7 +499,7 @@ _DOCKER_VOLUME_RESTORE_IMPL()
 }
 
 #======================
-# DOCKER_VOLUME_EMPTY
+# DOCKER_VOLUMES_EMPTY
 #
 # Delete all files in a volume.
 #
@@ -512,10 +512,10 @@ _DOCKER_VOLUME_RESTORE_IMPL()
 #   non-zero on error
 #
 #=====================
-DOCKER_VOLUME_EMPTY()
+DOCKER_VOLUMES_EMPTY()
 {
     SPACE_SIGNATURE="name"
-    SPACE_CMD="_DOCKER_VOLUME_EMPTY_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_EMPTY_IMPL"
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
@@ -536,12 +536,12 @@ DOCKER_VOLUME_EMPTY()
 }
 
 #=====================
-# _DOCKER_VOLUME_EMPTY_IMPL
+# _DOCKER_VOLUMES_EMPTY_IMPL
 #
-# Used by DOCKER_VOLUME_EMPTY
+# Used by DOCKER_VOLUMES_EMPTY
 #
 #=====================
-_DOCKER_VOLUME_EMPTY_IMPL()
+_DOCKER_VOLUMES_EMPTY_IMPL()
 {
     SPACE_SIGNATURE="targetdir"
     # shellcheck disable=2034
@@ -559,7 +559,7 @@ _DOCKER_VOLUME_EMPTY_IMPL()
 }
 
 #=======================
-# DOCKER_VOLUME_SNAPSHOT
+# DOCKER_VOLUMES_SNAPSHOT
 #
 # Archive all files inside volume into a tar.gz archive or to stdout.
 #
@@ -568,13 +568,13 @@ _DOCKER_VOLUME_EMPTY_IMPL()
 #   $2: archive, either path to tar.gz file, path to a directory or '-' for stdout.
 #
 #=======================
-DOCKER_VOLUME_SNAPSHOT()
+DOCKER_VOLUMES_SNAPSHOT()
 {
     SPACE_SIGNATURE="name archive.tar.gz|dir|-"
     # shellcheck disable=2034
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=2034
-    SPACE_CMD="_DOCKER_VOLUME_SNAPSHOT_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
 
     local name="${1}"
     shift
@@ -610,12 +610,12 @@ DOCKER_VOLUME_SNAPSHOT()
 }
 
 #=======================
-# _DOCKER_VOLUME_SNAPSHOT_IMPL
+# _DOCKER_VOLUMES_SNAPSHOT_IMPL
 #
-# USed by DOCKER_VOLUME_SNAPSHOT
+# USed by DOCKER_VOLUMES_SNAPSHOT
 #
 ##=======================
-_DOCKER_VOLUME_SNAPSHOT_IMPL()
+_DOCKER_VOLUMES_SNAPSHOT_IMPL()
 {
     # shellcheck disable=2034
     SPACE_SIGNATURE="targetdir"
@@ -640,12 +640,12 @@ _DOCKER_VOLUME_SNAPSHOT_IMPL()
 
 #==============================
 #
-# _DOCKER_VOLUME_OUTER_DEPLOY
+# _DOCKER_VOLUMES_OUTER_UP
 #
-# The outer function of DOCKER_VOLUME_DEPLOY
+# The outer function of DOCKER_VOLUMES_UP
 #
 #==============================
-_DOCKER_VOLUME_OUTER_DEPLOY()
+_DOCKER_VOLUMES_OUTER_UP()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_CMDDEP="STRING_SUBST CONF_READ"
@@ -673,7 +673,6 @@ _DOCKER_VOLUME_OUTER_DEPLOY()
             return 1
         fi
 
-        # We here have block of variables from conf file.
         PRINT "Populate volume: ${prefix}${name}."
 
         # This variable will be used by the wrapper to run the container.
@@ -720,7 +719,7 @@ _DOCKER_VOLUME_OUTER_DEPLOY()
 }
 
 #=======================
-# DOCKER_VOLUME_DEPLOY
+# DOCKER_VOLUMES_UP
 #
 # Create and populate docker volumes defined
 # in conf file.
@@ -745,25 +744,26 @@ _DOCKER_VOLUME_OUTER_DEPLOY()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUME_DEPLOY()
+DOCKER_VOLUMES_UP()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="_DOCKER_VOLUME_DEPLOY_IMPL"
+    SPACE_CMD="_DOCKER_VOLUMES_UP_IMPL"
     # shellcheck disable=SC2034
     SPACE_CMDWRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=SC2034
     SPACE_CMDREDIR="<\$archive"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUME_OUTER_DEPLOY"
+    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_UP"
 
     local conffile="${1}"
     shift
 
     local name=""
     if [ ! "${1+set}" = "set" ]; then
-        name="${conffile%.conf}"
+        name="${conffile%.conf*}"
+        name="${name##*/}"
         name="${name%%_docker-volumes}"
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"
@@ -789,9 +789,9 @@ DOCKER_VOLUME_DEPLOY()
 }
 
 #============================
-# _DOCKER_VOLUME_DEPLOY_IMPL
+# _DOCKER_VOLUMES_UP_IMPL
 #
-# Implementation for DOCKER_VOLUME_DEPLOY
+# Implementation for DOCKER_VOLUMES_UP
 #
 # Parameters:
 #   $1: targetdir: the directory inside the container to where the volume is mounted.
@@ -804,10 +804,10 @@ DOCKER_VOLUME_DEPLOY()
 #   non-zero on error
 #
 #============================
-_DOCKER_VOLUME_DEPLOY_IMPL()
+_DOCKER_VOLUMES_UP_IMPL()
 {
     SPACE_SIGNATURE="targetdir chmod chown empty archive"
-    SPACE_CMDDEP="_DOCKER_VOLUME_CHMOD_IMPL _DOCKER_VOLUME_RESTORE_IMPL"
+    SPACE_CMDDEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
 
     local targetdir="${1}"
     shift
@@ -825,7 +825,7 @@ _DOCKER_VOLUME_DEPLOY_IMPL()
     shift
 
     if [ -n "${_chmod}" ] || [ -n "${_chown}" ]; then
-        _DOCKER_VOLUME_CHMOD_IMPL "${targetdir}" "${_chmod}" "${_chown}"
+        _DOCKER_VOLUMES_CHMOD_IMPL "${targetdir}" "${_chmod}" "${_chown}"
         if [ "$?" -gt 0 ]; then
             return 1
         fi
@@ -840,7 +840,7 @@ _DOCKER_VOLUME_DEPLOY_IMPL()
     fi
 
     if [ "${archive}" -eq 1 ]; then
-        _DOCKER_VOLUME_RESTORE_IMPL "${targetdir}" "" "true"
+        _DOCKER_VOLUMES_RESTORE_IMPL "${targetdir}" "" "true"
         if [ "$?" -gt 0 ]; then
             return 1
         fi
@@ -849,12 +849,12 @@ _DOCKER_VOLUME_DEPLOY_IMPL()
 
 #==============================
 #
-# _DOCKER_VOLUME_OUTER_UNDEPLOY
+# _DOCKER_VOLUMES_OUTER_DOWN
 #
-# The outer function of DOCKER_VOLUME_UNDEPLOY
+# The outer function of DOCKER_VOLUMES_DOWN
 #
 #==============================
-_DOCKER_VOLUME_OUTER_UNDEPLOY()
+_DOCKER_VOLUMES_OUTER_DOWN()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_CMDDEP="CONF_READ"
@@ -890,7 +890,7 @@ _DOCKER_VOLUME_OUTER_UNDEPLOY()
 }
 
 #=======================
-# DOCKER_VOLUME_UNDEPLOY
+# DOCKER_VOLUMES_DOWN
 #
 # Delete docker volumes defined in conf file.
 #
@@ -914,21 +914,22 @@ _DOCKER_VOLUME_OUTER_UNDEPLOY()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUME_UNDEPLOY()
+DOCKER_VOLUMES_DOWN()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="DOCKER_VOLUME_RM"
+    SPACE_CMD="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUME_OUTER_UNDEPLOY"
+    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_DOWN"
 
     local conffile="${1}"
     shift
 
     local name=""
     if [ ! "${1+set}" = "set" ]; then
-        name="${conffile%.conf}"
+        name="${conffile%.conf*}"
+        name="${name##*/}"
         name="${name%%_docker-volumes}"
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"
@@ -947,12 +948,12 @@ DOCKER_VOLUME_UNDEPLOY()
 
 #==============================
 #
-# _DOCKER_VOLUME_OUTER_STATUSES
+# _DOCKER_VOLUMES_OUTER_STATUSES
 #
-# The outer function of DOCKER_VOLUME_STATUSES
+# The outer function of DOCKER_VOLUMES_STATUSES
 #
 #==============================
-_DOCKER_VOLUME_OUTER_STATUSES()
+_DOCKER_VOLUMES_OUTER_STATUSES()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_CMDDEP="CONF_READ"
@@ -984,7 +985,7 @@ _DOCKER_VOLUME_OUTER_STATUSES()
 }
 
 #=======================
-# DOCKER_VOLUME_STATUSES
+# DOCKER_VOLUMES_STATUSES
 #
 # Check status of docker volumes defined in conf file.
 #
@@ -1008,21 +1009,22 @@ _DOCKER_VOLUME_OUTER_STATUSES()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUME_STATUSES()
+DOCKER_VOLUMES_STATUSES()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="DOCKER_VOLUME_STATUS"
+    SPACE_CMD="DOCKER_VOLUMES_STATUS"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUME_OUTER_STATUSES"
+    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_STATUSES"
 
     local conffile="${1}"
     shift
 
     local name=""
     if [ ! "${1+set}" = "set" ]; then
-        name="${conffile%.conf}"
+        name="${conffile%.conf*}"
+        name="${name##*/}"
         name="${name%%_docker-volumes}"
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"

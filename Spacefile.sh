@@ -42,7 +42,7 @@ DOCKER_VOLUME_DEP_INSTALL()
     shift
 
     if OS_IS_INSTALLED "docker"; then
-        PRINT "Docker is already installed. To reinstall run: space -m docker /install/." "success"
+        PRINT "Docker is already installed. To reinstall run: space -m docker /install/." "ok"
     else
         DOCKER_INSTALL "${targetuser}"
     fi

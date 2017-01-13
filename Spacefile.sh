@@ -142,7 +142,7 @@ DOCKER_VOLUMES_ENTER()
     image="alpine"
     flags="-it --rm -v ${name}:/mountvol"
     container=
-    cmd="sh -c \"cd /\""
+    cmd="sh -c"
 
     SPACE_CMDARGS="\"/mountvol\""
 }

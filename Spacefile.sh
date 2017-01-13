@@ -114,6 +114,67 @@ DOCKER_VOLUMES_CREATE()
 }
 
 #=======================
+# DOCKER_VOLUMES_ENTER
+#
+# Enter into a docker container where the
+# volume is mounted.
+#
+# This command will get wrapped and run inside a temporary container.
+#
+# Parameters:
+#   $1: name of volume
+#
+# Returns:
+#   non-zero on error
+#
+#======================
+DOCKER_VOLUMES_ENTER()
+{
+    SPACE_SIGNATURE="name"
+    # We have to chain to another cmd since we want to wrap it.
+    SPACE_CMD="_DOCKER_VOLUMES_ENTER_IMPL"
+    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+
+    local name="${1}"
+    shift
+
+    # These variables will get exported.
+    image="alpine"
+    flags="-it --rm -v ${name}:/mountvol"
+    container=
+    cmd="sh -c \"cd /\""
+
+    SPACE_CMDARGS="\"/mountvol\""
+}
+
+#=============================
+# _DOCKER_VOLUMES_ENTER_IMPL
+#
+# The implementation for DOCKER_VOLUMES_ENTER.
+#
+#=============================
+_DOCKER_VOLUMES_ENTER_IMPL()
+{
+    SPACE_SIGNATURE="targetdir"
+    SPACE_CMDDEP="PRINT"
+
+    local targetdir="${1}"
+    shift
+
+    if ! mountpoint -q "${targetdir}"; then
+        PRINT "Target dir ${targetdir} is not a mountpoint, it must be a mounted volume." "error"
+        return 1
+    fi
+
+    cd "${targetdir}" &&
+    SPACE_FNNAME=""
+    PRINT "Here we are, behold your volume and all it's files." "ok"
+    PRINT "Changes you make to files will stick." "ok"
+
+    sh
+}
+
+#=======================
 # DOCKER_VOLUMES_FILELIST
 #
 # List all files inside a volume from within a container.
@@ -251,23 +312,23 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 }
 
 #=====================
-# DOCKER_VOLUMES_STATUS
+# DOCKER_VOLUMES_INSPECT
 #
-# Get simple status of a volume.
+# Inspect a volume.
 #
 # Parameters:
 #   $@: volume name
 #
 #=====================
-DOCKER_VOLUMES_STATUS()
+DOCKER_VOLUMES_INSPECT()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="name [name]"
     SPACE_CMDDEP="PRINT"
 
     local name="${1}"
     shift
 
-    PRINT "Volume status: ${name}"
+    PRINT "Volume inspect for: ${name}"
 
     local s=
     if ! s="$(docker volume inspect ${name})"; then
@@ -768,6 +829,7 @@ DOCKER_VOLUMES_UP()
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"
         name="${name//_}"
+        name="${name//.}"
     else
         # Prefix is given, could be "".
         local name="${1}"
@@ -934,6 +996,7 @@ DOCKER_VOLUMES_DOWN()
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"
         name="${name//_}"
+        name="${name//.}"
     else
         # Prefix is given, could be "".
         local name="${1}"
@@ -948,12 +1011,12 @@ DOCKER_VOLUMES_DOWN()
 
 #==============================
 #
-# _DOCKER_VOLUMES_OUTER_STATUSES
+# _DOCKER_VOLUMES_OUTER_PS
 #
-# The outer function of DOCKER_VOLUMES_STATUSES
+# The outer function of DOCKER_VOLUMES_PS
 #
 #==============================
-_DOCKER_VOLUMES_OUTER_STATUSES()
+_DOCKER_VOLUMES_OUTER_PS()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_CMDDEP="CONF_READ"
@@ -985,9 +1048,9 @@ _DOCKER_VOLUMES_OUTER_STATUSES()
 }
 
 #=======================
-# DOCKER_VOLUMES_STATUSES
+# DOCKER_VOLUMES_PS
 #
-# Check status of docker volumes defined in conf file.
+# Inspect ony or many docker volumes defined in conf file.
 #
 # The conf file is a key value based tex file, as:
 #   name    volume name
@@ -1009,14 +1072,14 @@ _DOCKER_VOLUMES_OUTER_STATUSES()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUMES_STATUSES()
+DOCKER_VOLUMES_PS()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="DOCKER_VOLUMES_STATUS"
+    SPACE_CMD="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_STATUSES"
+    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_PS"
 
     local conffile="${1}"
     shift
@@ -1029,6 +1092,7 @@ DOCKER_VOLUMES_STATUSES()
         # To dodge some trouble we remove dashes and underscores from the name.
         name="${name//-}"
         name="${name//_}"
+        name="${name//.}"
     else
         # Prefix is given, could be "".
         local name="${1}"
@@ -1039,4 +1103,79 @@ DOCKER_VOLUMES_STATUSES()
     SPACE_CMDOUTERARGS="\"${conffile}\" \"${name}\""
 
     SPACE_CMDARGS="\"\${name-}\""
+}
+
+#=============================
+#
+# _DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
+#
+#
+#=============================
+_DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
+{
+    SPACE_SIGNATURE="conffile"
+
+    local conffile="${1}"
+    shift
+
+        printf "%s\n" "This is the SpaceGal wrapper over docker-volumes.
+Pass in a COMMAND as: -- command.
+    up
+    down
+    ps
+
+Example:
+    ${conffile} -- up
+
+"
+    #_CMD_
+}
+
+#=======================
+# DOCKER_VOLUMES_SHEBANG
+#
+#
+# Handle the "shebang" invocations of docker-volumes files.
+#
+# Parameters:
+#   $1: conffile The path to the conf file describing the volumes.
+#   $2: command to run: deploy|undeploy|help
+#
+# Returns:
+#   non-zero on error.
+#
+#=======================
+DOCKER_VOLUMES_SHEBANG()
+{
+    # shellcheck disable=SC2034
+    SPACE_SIGNATURE="conffile [cmd]"
+    # shellcheck disable=SC2034
+    SPACE_CMD="NOOP"
+    # shellcheck disable=SC2034
+
+    local conffile="${1}"
+    shift
+
+    local cmd="${1:-help}"
+    shift $(( $# > 0 ? 1 : 0 ))
+
+    if [ "${cmd}" = "help" ]; then
+        # This is just because in this situation Space requires an actual CMD, but we are only interested in the outer cmd.
+        SPACE_CMD="PRINT"
+        SPACE_CMDARGS="Done debug"
+        SPACE_CMDOUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"
+        SPACE_CMDOUTERARGS="\"${conffile}\""
+    elif [ "${cmd}" = "up" ]; then
+        SPACE_CMD="DOCKER_VOLUMES_UP"
+        SPACE_CMDARGS="\"${conffile-}\""
+    elif [ "${cmd}" = "down" ]; then
+        SPACE_CMD="DOCKER_VOLUMES_DOWN"
+        SPACE_CMDARGS="\"${conffile-}\""
+    elif [ "${cmd}" = "ps" ]; then
+        SPACE_CMD="DOCKER_VOLUMES_PS"
+        SPACE_CMDARGS="\"${conffile-}\""
+    else
+        PRINT "Unknown command: ${cmd}. Try up/down/ps/help" "error"
+        return 1
+    fi
 }

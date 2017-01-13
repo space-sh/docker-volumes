@@ -39,7 +39,18 @@ install:
         - targetuser: ${targetuser:-${SSHUSER:-$USER}}
         - CMD: DOCKER_VOLUMES_INSTALL -- "${targetuser}"
 
-deploy:
+_shebang:
+    _info:
+        title: Handle shebang invocations
+        desc: |
+            In a docker-volumes.conf file you could put
+            #!/usr/bin/space -m docker-volumes /_shebang/
+            as the first line to make the yaml file itself runnable.
+            Remember to chmod +x it first.
+    _env:
+        - CMD: DOCKER_VOLUMES_SHEBANG
+
+up:
     _info:
         title: Deploy volumes defined in conf file
         desc: |
@@ -87,12 +98,12 @@ chmod:
         - chown: ${chown-}
         - CMD: DOCKER_VOLUMES_CHMOD -- ${name-} ${chmod-} ${chown-}
 
-status:
+inspect:
     _info:
         title: Check simple status of volume
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_STATUS -- ${name-}
+        - CMD: DOCKER_VOLUMES_INSPECT -- ${name-}
 
 exists:
     _info:
@@ -126,6 +137,13 @@ inspect:
     _env:
         - name: ${name-}
         - CMD: DOCKER_VOLUMES_INSPECT -- ${name-}
+
+enter:
+    _info:
+        title: Enter into volume with a shell
+    _env:
+        - name: ${name-}
+        - CMD: DOCKER_VOLUMES_ENTER -- ${name-}
 
 empty:
     _info:

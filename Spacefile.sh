@@ -498,7 +498,7 @@ _DOCKER_VOLUMES_RESTORE_OUTER()
 
     local tempfile="/tmp/space.$$"
     PRINT "Creating temporary archive: ${tempfile} for directory: ${dir}."
-    tar -czf $tempfile -C $dir --owner=root --group=root .
+    tar -czf $tempfile -C $dir .
 
     local archive="$tempfile"  # This will be in the redirection.
     _CMD_
@@ -747,7 +747,7 @@ _DOCKER_VOLUMES_OUTER_UP()
                 # We'll create a temporary archive of the directory given.
                 tempfile="/tmp/space.$$"
                 PRINT "Creating temporary archive: ${tempfile} for directory: ${archive}."
-                tar -czf $tempfile -C $archive --owner=root --group=root .
+                tar -czf $tempfile -C $archive .
                 archive="$tempfile"
             else
                 # We assume it's a tar.gz archive.

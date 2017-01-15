@@ -368,7 +368,9 @@ DOCKER_VOLUMES_RM()
 DOCKER_VOLUMES_LS()
 {
     SPACE_SIGNATURE="[options]"
-    docker volume ls "${@}"
+    if [ "$#" -gt 0 ]; then
+        docker volume ls "${@}"
+    fi
 }
 
 #=====================

@@ -819,6 +819,7 @@ DOCKER_VOLUMES_UP()
     SPACE_CMDREDIR="<\$archive"
     # shellcheck disable=SC2034
     SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_UP"
+    SPACE_CMDDEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -828,10 +829,10 @@ DOCKER_VOLUMES_UP()
         name="${conffile%.conf*}"
         name="${name##*/}"
         name="${name%%_docker-volumes}"
-        # To dodge some trouble we remove dashes and underscores from the name.
-        name="${name//-}"
-        name="${name//_}"
-        name="${name//.}"
+        # Make name docker friendly.
+        STRING_SUBST "name" "-" "" 1
+        STRING_SUBST "name" "_" "" 1
+        STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
         local name="${1}"
@@ -986,6 +987,7 @@ DOCKER_VOLUMES_DOWN()
     SPACE_CMD="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
     SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_DOWN"
+    SPACE_CMDDEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -995,10 +997,10 @@ DOCKER_VOLUMES_DOWN()
         name="${conffile%.conf*}"
         name="${name##*/}"
         name="${name%%_docker-volumes}"
-        # To dodge some trouble we remove dashes and underscores from the name.
-        name="${name//-}"
-        name="${name//_}"
-        name="${name//.}"
+        # Make name docker friendly.
+        STRING_SUBST "name" "-" "" 1
+        STRING_SUBST "name" "_" "" 1
+        STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
         local name="${1}"
@@ -1082,6 +1084,7 @@ DOCKER_VOLUMES_PS()
     SPACE_CMD="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
     SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_PS"
+    SPACE_CMDDEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -1091,10 +1094,10 @@ DOCKER_VOLUMES_PS()
         name="${conffile%.conf*}"
         name="${name##*/}"
         name="${name%%_docker-volumes}"
-        # To dodge some trouble we remove dashes and underscores from the name.
-        name="${name//-}"
-        name="${name//_}"
-        name="${name//.}"
+        # Make name docker friendly.
+        STRING_SUBST "name" "-" "" 1
+        STRING_SUBST "name" "_" "" 1
+        STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
         local name="${1}"

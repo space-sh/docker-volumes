@@ -418,7 +418,7 @@ DOCKER_VOLUMES_INSPECT()
 # possibly delete all files in volume first.
 #
 # If archive is local dir, beware of permissions, all files
-# will be extraced as root:root, which may brake stuff if
+# will be extracted as root:root, which may brake stuff if
 # your applications runs as any other user than root.
 # However when restoring a snapshotted tar.gz archive then
 # permissions are preserved.
@@ -1054,7 +1054,7 @@ _DOCKER_VOLUMES_OUTER_PS()
 #=======================
 # DOCKER_VOLUMES_PS
 #
-# Inspect ony or many docker volumes defined in conf file.
+# Inspect one or many docker volumes defined in conf file.
 #
 # The conf file is a key value based tex file, as:
 #   name    volume name

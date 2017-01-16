@@ -36,7 +36,7 @@ clone os file docker conf string
 DOCKER_VOLUMES_DEP_INSTALL()
 {
     SPACE_SIGNATURE="targetuser"
-    SPACE_CMDDEP="PRINT OS_IS_INSTALLED DOCKER_INSTALL"
+    SPACE_DEP="PRINT OS_IS_INSTALLED DOCKER_INSTALL"
 
     local targetuser="${1}"
     shift
@@ -67,7 +67,7 @@ DOCKER_VOLUMES_DEP_INSTALL()
 DOCKER_VOLUMES_INSTALL()
 {
     SPACE_SIGNATURE="targetuser"
-    SPACE_CMDDEP="PRINT DOCKER_INSTALL"
+    SPACE_DEP="PRINT DOCKER_INSTALL"
 
     local targetuser="${1}"
     shift
@@ -93,7 +93,7 @@ DOCKER_VOLUMES_INSTALL()
 DOCKER_VOLUMES_CREATE()
 {
     SPACE_SIGNATURE="name [driver opts label]"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local name="${1}"
     shift
@@ -132,8 +132,8 @@ DOCKER_VOLUMES_ENTER()
 {
     SPACE_SIGNATURE="name"
     # We have to chain to another cmd since we want to wrap it.
-    SPACE_CMD="_DOCKER_VOLUMES_ENTER_IMPL"
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_FN="_DOCKER_VOLUMES_ENTER_IMPL"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
     shift
@@ -144,7 +144,7 @@ DOCKER_VOLUMES_ENTER()
     container=
     cmd="sh -c"
 
-    SPACE_CMDARGS="\"/mountvol\""
+    SPACE_ARGS="\"/mountvol\""
 }
 
 #=============================
@@ -156,7 +156,7 @@ DOCKER_VOLUMES_ENTER()
 _DOCKER_VOLUMES_ENTER_IMPL()
 {
     SPACE_SIGNATURE="targetdir"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local targetdir="${1}"
     shift
@@ -195,8 +195,8 @@ DOCKER_VOLUMES_FILELIST()
 {
     SPACE_SIGNATURE="name"
     # We have to chain to another cmd since we want to wrap it.
-    SPACE_CMD="_DOCKER_VOLUMES_FILELIST_IMPL"
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_FN="_DOCKER_VOLUMES_FILELIST_IMPL"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
     shift
@@ -207,7 +207,7 @@ DOCKER_VOLUMES_FILELIST()
     container=
     cmd="sh -c"
 
-    SPACE_CMDARGS="\"/mountvol\""
+    SPACE_ARGS="\"/mountvol\""
 }
 
 #=============================
@@ -219,7 +219,7 @@ DOCKER_VOLUMES_FILELIST()
 _DOCKER_VOLUMES_FILELIST_IMPL()
 {
     SPACE_SIGNATURE="targetdir"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local targetdir="${1}"
     shift
@@ -254,8 +254,8 @@ DOCKER_VOLUMES_CHMOD()
 {
     SPACE_SIGNATURE="name chmod [chown]"
     # We have to chain to another cmd since we want to wrap it.
-    SPACE_CMD="_DOCKER_VOLUMES_CHMOD_IMPL"
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_FN="_DOCKER_VOLUMES_CHMOD_IMPL"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
     shift
@@ -272,7 +272,7 @@ DOCKER_VOLUMES_CHMOD()
     container=
     cmd="sh -c"
 
-    SPACE_CMDARGS="\"/mountvol\" \"${chmod}\" \"${chown}\""
+    SPACE_ARGS="\"/mountvol\" \"${chmod}\" \"${chown}\""
 }
 
 #=====================
@@ -284,7 +284,7 @@ DOCKER_VOLUMES_CHMOD()
 _DOCKER_VOLUMES_CHMOD_IMPL()
 {
     SPACE_SIGNATURE="targetdir chmod [chown]"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local targetdir="${1}"
     shift
@@ -323,7 +323,7 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 DOCKER_VOLUMES_INSPECT()
 {
     SPACE_SIGNATURE="name [name]"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local name="${1}"
     shift
@@ -350,7 +350,7 @@ DOCKER_VOLUMES_INSPECT()
 DOCKER_VOLUMES_RM()
 {
     SPACE_SIGNATURE="name [name]"
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     PRINT "Remove volume(s): ${*}."
     docker volume rm "${@}"
@@ -442,8 +442,8 @@ DOCKER_VOLUMES_INSPECT()
 DOCKER_VOLUMES_RESTORE()
 {
     SPACE_SIGNATURE="name archive.tar.gz|dir|- [empty preservepermissions]"
-    SPACE_CMD="_DOCKER_VOLUMES_RESTORE_IMPL"
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_FN="_DOCKER_VOLUMES_RESTORE_IMPL"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
     shift
@@ -473,15 +473,15 @@ DOCKER_VOLUMES_RESTORE()
         fi
     else
         if [ -d "${archive}" ]; then
-            SPACE_CMDOUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
-            SPACE_CMDOUTERARGS="${archive}"
-            SPACE_CMDREDIR="<\${archive}"
+            SPACE_OUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
+            SPACE_OUTERARGS="${archive}"
+            SPACE_REDIR="<\${archive}"
         else
-            SPACE_CMDREDIR="<${archive}"
+            SPACE_REDIR="<${archive}"
         fi
     fi
 
-    SPACE_CMDARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
+    SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
 }
 
 #=============================
@@ -516,7 +516,7 @@ _DOCKER_VOLUMES_RESTORE_OUTER()
 _DOCKER_VOLUMES_RESTORE_IMPL()
 {
     SPACE_SIGNATURE="targetdir empty preservepermissions"
-    SPACE_CMDDEP="PRINT FILE_GET_PERMISSIONS FILE_RESTORE_PERMISSIONS"
+    SPACE_DEP="PRINT FILE_GET_PERMISSIONS FILE_RESTORE_PERMISSIONS"
 
     local targetdir="${1}"
     shift
@@ -578,8 +578,8 @@ _DOCKER_VOLUMES_RESTORE_IMPL()
 DOCKER_VOLUMES_EMPTY()
 {
     SPACE_SIGNATURE="name"
-    SPACE_CMD="_DOCKER_VOLUMES_EMPTY_IMPL"
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_FN="_DOCKER_VOLUMES_EMPTY_IMPL"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
 
     local name="${1}"
     shift
@@ -595,7 +595,7 @@ DOCKER_VOLUMES_EMPTY()
     cmd="sh -c"
 
     PRINT "Emptying volume: ${name}."
-    SPACE_CMDARGS="\"${targetdir}\""
+    SPACE_ARGS="\"${targetdir}\""
 }
 
 #=====================
@@ -608,7 +608,7 @@ _DOCKER_VOLUMES_EMPTY_IMPL()
 {
     SPACE_SIGNATURE="targetdir"
     # shellcheck disable=2034
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local targetdir="${1}"
     shift
@@ -635,9 +635,9 @@ DOCKER_VOLUMES_SNAPSHOT()
 {
     SPACE_SIGNATURE="name archive.tar.gz|dir|-"
     # shellcheck disable=2034
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=2034
-    SPACE_CMD="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
+    SPACE_FN="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
 
     local name="${1}"
     shift
@@ -661,15 +661,15 @@ DOCKER_VOLUMES_SNAPSHOT()
     else
         if [ -d "${archive}" ]; then
             # shellcheck disable=2034
-            SPACE_CMDREDIR="| tar -xzf - -C ${archive}"
+            SPACE_REDIR="| tar -xzf - -C ${archive}"
         else
             # shellcheck disable=2034
-            SPACE_CMDREDIR=">${archive}"
+            SPACE_REDIR=">${archive}"
         fi
     fi
 
     # shellcheck disable=2034
-    SPACE_CMDARGS="${targetdir}"
+    SPACE_ARGS="${targetdir}"
 }
 
 #=======================
@@ -683,7 +683,7 @@ _DOCKER_VOLUMES_SNAPSHOT_IMPL()
     # shellcheck disable=2034
     SPACE_SIGNATURE="targetdir"
     # shellcheck disable=2034
-    SPACE_CMDDEP="PRINT"
+    SPACE_DEP="PRINT"
 
     local targetdir="${1}"
     shift
@@ -711,7 +711,7 @@ _DOCKER_VOLUMES_SNAPSHOT_IMPL()
 _DOCKER_VOLUMES_OUTER_UP()
 {
     SPACE_SIGNATURE="conffile [prefix]"
-    SPACE_CMDDEP="STRING_SUBST CONF_READ"
+    SPACE_DEP="STRING_SUBST CONF_READ"
 
     local conffile="${1}"
     shift
@@ -812,14 +812,14 @@ DOCKER_VOLUMES_UP()
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="_DOCKER_VOLUMES_UP_IMPL"
+    SPACE_FN="_DOCKER_VOLUMES_UP_IMPL"
     # shellcheck disable=SC2034
-    SPACE_CMDWRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=SC2034
-    SPACE_CMDREDIR="<\$archive"
+    SPACE_REDIR="<\$archive"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_UP"
-    SPACE_CMDDEP="STRING_SUBST"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_UP"
+    SPACE_DEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -840,7 +840,7 @@ DOCKER_VOLUMES_UP()
     fi
     name="${name:+${name}_}"
 
-    SPACE_CMDOUTERARGS="\"${conffile}\" \"${name}\""
+    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
     # These variables will get exported.
     # shellcheck disable=SC2034
@@ -850,7 +850,7 @@ DOCKER_VOLUMES_UP()
     cmd="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in CMDOUTER.
-    SPACE_CMDARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
+    SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
 }
 
 #============================
@@ -872,7 +872,7 @@ DOCKER_VOLUMES_UP()
 _DOCKER_VOLUMES_UP_IMPL()
 {
     SPACE_SIGNATURE="targetdir chmod chown empty archive"
-    SPACE_CMDDEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
+    SPACE_DEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
 
     local targetdir="${1}"
     shift
@@ -922,7 +922,7 @@ _DOCKER_VOLUMES_UP_IMPL()
 _DOCKER_VOLUMES_OUTER_DOWN()
 {
     SPACE_SIGNATURE="conffile [prefix]"
-    SPACE_CMDDEP="CONF_READ"
+    SPACE_DEP="CONF_READ"
 
     local conffile="${1}"
     shift
@@ -984,10 +984,10 @@ DOCKER_VOLUMES_DOWN()
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="DOCKER_VOLUMES_RM"
+    SPACE_FN="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_DOWN"
-    SPACE_CMDDEP="STRING_SUBST"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_DOWN"
+    SPACE_DEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -1008,9 +1008,9 @@ DOCKER_VOLUMES_DOWN()
     fi
     name="${name:+${name}_}"
 
-    SPACE_CMDOUTERARGS="\"${conffile}\" \"${name}\""
+    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    SPACE_CMDARGS="\"\${name-}\""
+    SPACE_ARGS="\"\${name-}\""
 }
 
 #==============================
@@ -1023,7 +1023,7 @@ DOCKER_VOLUMES_DOWN()
 _DOCKER_VOLUMES_OUTER_PS()
 {
     SPACE_SIGNATURE="conffile [prefix]"
-    SPACE_CMDDEP="CONF_READ"
+    SPACE_DEP="CONF_READ"
 
     local conffile="${1}"
     shift
@@ -1081,10 +1081,10 @@ DOCKER_VOLUMES_PS()
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_CMD="DOCKER_VOLUMES_INSPECT"
+    SPACE_FN="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
-    SPACE_CMDOUTER="_DOCKER_VOLUMES_OUTER_PS"
-    SPACE_CMDDEP="STRING_SUBST"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_PS"
+    SPACE_DEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -1105,9 +1105,9 @@ DOCKER_VOLUMES_PS()
     fi
     name="${name:+${name}_}"
 
-    SPACE_CMDOUTERARGS="\"${conffile}\" \"${name}\""
+    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    SPACE_CMDARGS="\"\${name-}\""
+    SPACE_ARGS="\"\${name-}\""
 }
 
 #=============================
@@ -1155,7 +1155,7 @@ DOCKER_VOLUMES_SHEBANG()
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [cmd]"
     # shellcheck disable=SC2034
-    SPACE_CMD="NOOP"
+    SPACE_FN="NOOP"
     # shellcheck disable=SC2034
 
     local conffile="${1}"
@@ -1166,19 +1166,19 @@ DOCKER_VOLUMES_SHEBANG()
 
     if [ "${cmd}" = "help" ]; then
         # This is just because in this situation Space requires an actual CMD, but we are only interested in the outer cmd.
-        SPACE_CMD="PRINT"
-        SPACE_CMDARGS="Done debug"
-        SPACE_CMDOUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"
-        SPACE_CMDOUTERARGS="\"${conffile}\""
+        SPACE_FN="PRINT"
+        SPACE_ARGS="Done debug"
+        SPACE_OUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"
+        SPACE_OUTERARGS="\"${conffile}\""
     elif [ "${cmd}" = "up" ]; then
-        SPACE_CMD="DOCKER_VOLUMES_UP"
-        SPACE_CMDARGS="\"${conffile-}\""
+        SPACE_FN="DOCKER_VOLUMES_UP"
+        SPACE_ARGS="\"${conffile-}\""
     elif [ "${cmd}" = "down" ]; then
-        SPACE_CMD="DOCKER_VOLUMES_DOWN"
-        SPACE_CMDARGS="\"${conffile-}\""
+        SPACE_FN="DOCKER_VOLUMES_DOWN"
+        SPACE_ARGS="\"${conffile-}\""
     elif [ "${cmd}" = "ps" ]; then
-        SPACE_CMD="DOCKER_VOLUMES_PS"
-        SPACE_CMDARGS="\"${conffile-}\""
+        SPACE_FN="DOCKER_VOLUMES_PS"
+        SPACE_ARGS="\"${conffile-}\""
     else
         PRINT "Unknown command: ${cmd}. Try up/down/ps/help" "error"
         return 1

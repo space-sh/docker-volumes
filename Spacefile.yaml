@@ -26,7 +26,7 @@ _dep_install:
             add the targetuser to the docker group.
     _env:
         - targetuser: ${targetuser:-${SSHUSER:-$USER}}
-        - CMD: DOCKER_VOLUMES_DEP_INSTALL -- "${targetuser}"
+        - RUN: DOCKER_VOLUMES_DEP_INSTALL -- "${targetuser}"
 
 install:
     _info:
@@ -37,7 +37,7 @@ install:
             Will reinstall if already installed.
     _env:
         - targetuser: ${targetuser:-${SSHUSER:-$USER}}
-        - CMD: DOCKER_VOLUMES_INSTALL -- "${targetuser}"
+        - RUN: DOCKER_VOLUMES_INSTALL -- "${targetuser}"
 
 _shebang:
     _info:
@@ -48,7 +48,7 @@ _shebang:
             as the first line to make the yaml file itself runnable.
             Remember to chmod +x it first.
     _env:
-        - CMD: DOCKER_VOLUMES_SHEBANG
+        - RUN: DOCKER_VOLUMES_SHEBANG
 
 up:
     _info:
@@ -59,7 +59,7 @@ up:
             Warning: this could destroy volumes data!
     _env:
         - conffile:
-        - CMD: DOCKER_VOLUMES_UP -- ${conffile-}
+        - RUN: DOCKER_VOLUMES_UP -- ${conffile-}
 
 down:
     _info:
@@ -68,14 +68,14 @@ down:
             Warning: this will really destroy all volumes and their data!
     _env:
         - conffile:
-        - CMD: DOCKER_VOLUMES_DOWN -- ${conffile-}
+        - RUN: DOCKER_VOLUMES_DOWN -- ${conffile-}
 
 ps:
     _info:
         title: Check statuses for volumes defined in conf file
     _env:
         - conffile:
-        - CMD: DOCKER_VOLUMES_PS -- ${conffile-}
+        - RUN: DOCKER_VOLUMES_PS -- ${conffile-}
 
 create:
     _info:
@@ -85,7 +85,7 @@ create:
         - driver: ${driver-}
         - opts: ${opts-}
         - labels: ${labels-}
-        - CMD: DOCKER_VOLUMES_CREATE -- ${name-} ${driver-} ${opts-} ${labels-}
+        - RUN: DOCKER_VOLUMES_CREATE -- ${name-} ${driver-} ${opts-} ${labels-}
 
 chmod:
     _info:
@@ -96,61 +96,61 @@ chmod:
         - name: ${name-}
         - chmod: ${chmod-}
         - chown: ${chown-}
-        - CMD: DOCKER_VOLUMES_CHMOD -- ${name-} ${chmod-} ${chown-}
+        - RUN: DOCKER_VOLUMES_CHMOD -- ${name-} ${chmod-} ${chown-}
 
 inspect:
     _info:
         title: Check simple status of volume
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_INSPECT -- ${name-}
+        - RUN: DOCKER_VOLUMES_INSPECT -- ${name-}
 
 exists:
     _info:
         title: Check if a volume exists
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_EXISTS -- ${name-}
+        - RUN: DOCKER_VOLUMES_EXISTS -- ${name-}
 
 filelist:
     _info:
         title: List all files inside a volume
     _env:
-        - CMD: DOCKER_VOLUMES_FILELIST
+        - RUN: DOCKER_VOLUMES_FILELIST
 
 rm:
     _info:
         title: Remove a volume
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_RM -- ${name-}
+        - RUN: DOCKER_VOLUMES_RM -- ${name-}
 
 ls:
     _info:
         title: List all volumes
     _env:
-        - CMD: DOCKER_VOLUMES_LS
+        - RUN: DOCKER_VOLUMES_LS
 
 inspect:
     _info:
         title: Inspect a volume
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_INSPECT -- ${name-}
+        - RUN: DOCKER_VOLUMES_INSPECT -- ${name-}
 
 enter:
     _info:
         title: Enter into volume with a shell
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_ENTER -- ${name-}
+        - RUN: DOCKER_VOLUMES_ENTER -- ${name-}
 
 empty:
     _info:
         title: Delete all files in a volume
     _env:
         - name: ${name-}
-        - CMD: DOCKER_VOLUMES_EMPTY -- ${name-}
+        - RUN: DOCKER_VOLUMES_EMPTY -- ${name-}
 
 restore:
     _info:
@@ -163,7 +163,7 @@ restore:
         - name: ${name-}
         - archive: ${archive-}
         - rmrf: ${rmrf-}
-        - CMD: DOCKER_VOLUMES_RESTORE -- ${name-} ${archive-} ${rmrf-}
+        - RUN: DOCKER_VOLUMES_RESTORE -- ${name-} ${archive-} ${rmrf-}
 
 snapshot:
     _info:
@@ -175,4 +175,4 @@ snapshot:
     _env:
         - name: ${name-}
         - archive: ${archive-}
-        - CMD: DOCKER_VOLUMES_SNAPSHOT -- ${name-} ${archive-}
+        - RUN: DOCKER_VOLUMES_SNAPSHOT -- ${name-} ${archive-}

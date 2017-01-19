@@ -368,9 +368,7 @@ DOCKER_VOLUMES_RM()
 DOCKER_VOLUMES_LS()
 {
     SPACE_SIGNATURE="[options]"
-    if [ "$#" -gt 0 ]; then
-        docker volume ls "${@}"
-    fi
+    docker volume ls "${@}"
 }
 
 #=====================
@@ -503,7 +501,7 @@ _DOCKER_VOLUMES_RESTORE_OUTER()
     tar -czf $tempfile -C $dir .
 
     local archive="$tempfile"  # This will be in the redirection.
-    _CMD_
+    _RUN_
     rm ${tempfile}
 }
 
@@ -719,8 +717,8 @@ _DOCKER_VOLUMES_OUTER_UP()
     local prefix="${1-}"
     shift $(( $# > 0 ? 1 : 0 ))
 
-    # We save the wrapped CMD because we want to alter it in each iteration.
-    local CMD_ORIGINAL="${CMD}"
+    # We save the wrapped RUN because we want to alter it in each iteration.
+    local RUN_ORIGINAL="${RUN}"
 
     local conf_lineno=0
     while true; do
@@ -760,14 +758,14 @@ _DOCKER_VOLUMES_OUTER_UP()
             archive="/dev/null"
         fi
 
-        CMD="${CMD_ORIGINAL}"
-        STRING_SUBST "CMD" "{TARGETDIR}" "/volume"
-        STRING_SUBST "CMD" "{CHMOD}" "${chmod}"
-        STRING_SUBST "CMD" "{CHOWN}" "${chown}"
-        STRING_SUBST "CMD" "{EMPTY}" "${empty}"
-        STRING_SUBST "CMD" "{ARCHIVE}" "${usearchive}"
+        RUN="${RUN_ORIGINAL}"
+        STRING_SUBST "RUN" "{TARGETDIR}" "/volume"
+        STRING_SUBST "RUN" "{CHMOD}" "${chmod}"
+        STRING_SUBST "RUN" "{CHOWN}" "${chown}"
+        STRING_SUBST "RUN" "{EMPTY}" "${empty}"
+        STRING_SUBST "RUN" "{ARCHIVE}" "${usearchive}"
 
-        _CMD_
+        _RUN_
 
         if [ -n "${tempfile}" ]; then
             PRINT "Removing temporary archive."
@@ -849,7 +847,7 @@ DOCKER_VOLUMES_UP()
     flags=
     cmd="sh -c"
 
-    # These arguments will get substituted by STRING_SUBST in CMDOUTER.
+    # These arguments will get substituted by STRING_SUBST in RUNOUTER.
     SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
 }
 
@@ -945,7 +943,7 @@ _DOCKER_VOLUMES_OUTER_DOWN()
         # We here have block of variables from conf file.
         PRINT "Remove volume: ${name}."
 
-        _CMD_
+        _RUN_
 
         if [ "${conf_lineno}" -eq 0 ]; then
             # Read done
@@ -1042,7 +1040,7 @@ _DOCKER_VOLUMES_OUTER_PS()
 
         name="${prefix}${name}"
 
-        _CMD_
+        _RUN_
 
         if [ "${conf_lineno}" -eq 0 ]; then
             # Read done
@@ -1133,7 +1131,7 @@ Example:
     ${conffile} -- up
 
 "
-    #_CMD_
+    #_RUN_
 }
 
 #=======================
@@ -1165,7 +1163,7 @@ DOCKER_VOLUMES_SHEBANG()
     shift $(( $# > 0 ? 1 : 0 ))
 
     if [ "${cmd}" = "help" ]; then
-        # This is just because in this situation Space requires an actual CMD, but we are only interested in the outer cmd.
+        # This is just because in this situation Space requires an actual RUN, but we are only interested in the outer cmd.
         SPACE_FN="PRINT"
         SPACE_ARGS="Done debug"
         SPACE_OUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"

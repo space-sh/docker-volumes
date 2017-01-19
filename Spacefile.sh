@@ -368,7 +368,7 @@ DOCKER_VOLUMES_RM()
 DOCKER_VOLUMES_LS()
 {
     SPACE_SIGNATURE="[options]"
-    docker volume ls "${@}"
+    docker volume ls "$@"
 }
 
 #=====================

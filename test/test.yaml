@@ -1,0 +1,186 @@
+#
+# Copyright 2016 Blockie AB
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# This test suite is a bit different, since it tests Docker and test suites
+# are normally wrapped inside Docker containers for testing.
+# Many commands will force them selves to run outside of the docker wrapper
+# using "SPACE_WRAP: !unset", and some commands cannot run in the given container
+# because they need to mount a docker volume and will create a container
+# them selves.
+
+@clone: file
+
+_info:
+    title: Test suite for the Docker module.
+    desc: |
+        These tests uses the "testrunner" module to run the tests.
+        If the tests are run directly as-is outside a wrapper,
+        they might wreak havoc on your system.
+        TestRunner module wraps the tests properly.
+_env:
+    - name: docker-test-volume-abc
+    - archive: /tmp/docker-vol.tar.gz
+    - RUN: ${_SPACEBIN} -m testrunner /run/ -- -- @{DIR}/test.yaml
+
+_platforms:
+    - type: docker
+      subtype: debian
+    - type: docker
+      subtype: ubuntu
+    - type: docker
+      subtype: alpine
+    - type: docker
+      subtype: busybox
+
+_tests:
+    -
+        -
+            _info:
+                title: Check that the volume does not exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_NO_VOLUME -- "${name}"
+        -
+            _info:
+                title: Create volume.
+            _env:
+                - SPACE_WRAP: !unset
+            @include: @{DIR}/../Spacefile.yaml|/create/
+        -
+            _info:
+                title: Check that the volume does exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_VOLUME -- "${name}"
+        -
+            _info:
+                title: Remove volume.
+            _env:
+                - SPACE_WRAP: !unset
+            @include: @{DIR}/../Spacefile.yaml|/rm/
+        -
+            _info:
+                title: Check that the volume does not exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_NO_VOLUME -- "${name}"
+    -
+        -
+            _info:
+                title: Check that the volume does not exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_NO_VOLUME -- "${name}"
+        -
+            _info:
+                title: Create volume.
+            _env:
+                - SPACE_WRAP: !unset
+            @include: @{DIR}/../Spacefile.yaml|/create/
+        -
+            _info:
+                title: Check that the volume does exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_VOLUME -- "${name}"
+        -
+            _info:
+                title: Create directories inside volume.
+            _env:
+                - SPACE_WRAP: DOCKER_RUN_WRAP
+                - image: ${TEST_PLATFORM_SUBTYPE}
+                - container: !unset
+                - flags: -v ${name}:/volume --rm
+                - cmd: sh -c
+                - RUN: FILE_MKDIRP -- "/volume/spacegal/says/hello"
+        -
+            _info:
+                title: Create files inside volume.
+            _env:
+                - SPACE_WRAP: DOCKER_RUN_WRAP
+                - image: ${TEST_PLATFORM_SUBTYPE}
+                - container: !unset
+                - flags: -v ${name}:/volume --rm
+                - cmd: sh -c
+                - RUN: FILE_TOUCH -- "/volume/spacegal/says/hello/file1" "/volume/spacegal/says/hello/file2"
+        -
+            _info:
+                title: Check so file exist.
+            _env:
+                - SPACE_WRAP: DOCKER_RUN_WRAP
+                - image: ${TEST_PLATFORM_SUBTYPE}
+                - container: !unset
+                - flags: -v ${name}:/volume --rm
+                - cmd: sh -c
+                - RUN: FILE_EXIST -- "/volume/spacegal/says/hello/file1" "/volume/spacegal/says/hello/file2"
+        -
+            _info:
+                title: Take snapshot of volume.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: DOCKER_VOLUMES_SNAPSHOT -- "${name}" "${archive}" "/volume" "${TEST_PLATFORM_SUBTYPE}"
+        -
+            _info:
+                title: Empty volume.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: DOCKER_VOLUMES_EMPTY -- "${name}" "/volume" "${TEST_PLATFORM_SUBTYPE}"
+        -
+            _info:
+                title: Check so file does not exist.
+            _env:
+                - SPACE_WRAP: DOCKER_RUN_WRAP
+                - image: ${TEST_PLATFORM_SUBTYPE}
+                - container: !unset
+                - flags: -v ${name}:/volume --rm
+                - cmd: sh -c
+                - RUN: FILE_NOT_EXIST -- "/volume/spacegal/says/hello/file1" "/volume/spacegal/says/hello/file2"
+        -
+            _info:
+                title: Restore from archive.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: DOCKER_VOLUMES_RESTORE -- "${name}" "${archive}" "1" "/volume" "${TEST_PLATFORM_SUBTYPE}" "1"
+        -
+            _info:
+                title: Check so file exist.
+            _env:
+                - SPACE_WRAP: DOCKER_RUN_WRAP
+                - image: ${TEST_PLATFORM_SUBTYPE}
+                - container: !unset
+                - flags: -v ${name}:/volume --rm
+                - cmd: sh -c
+                - RUN: FILE_EXIST -- "/volume/spacegal/says/hello/file1" "/volume/spacegal/says/hello/file2"
+        -
+            _info:
+                title: Remove volume.
+            _env:
+                - SPACE_WRAP: !unset
+            @include: @{DIR}/../Spacefile.yaml|/rm/
+        -
+            _info:
+                title: Check that the volume does not exist.
+            _env:
+                - SPACE_WRAP: !unset
+                - RUN: _DOCKER_CHECK_NO_VOLUME -- "${name}"
+
+_clean:
+    _info:
+        title: Remove volume.
+    _env:
+        - SPACE_SILENT: ${SPACE_SILENT-1}
+        - SPACE_WRAP: !unset
+    @include: @{DIR}/../Spacefile.yaml|/rm/

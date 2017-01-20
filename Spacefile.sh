@@ -352,8 +352,8 @@ DOCKER_VOLUMES_RM()
     SPACE_SIGNATURE="name [name]"
     SPACE_DEP="PRINT"
 
-    PRINT "Remove volume(s): ${*}."
-    docker volume rm "${@}"
+    PRINT "Remove volume(s): $*."
+    docker volume rm "$@"
 }
 
 #=====================
@@ -406,7 +406,7 @@ DOCKER_VOLUMES_EXISTS()
 DOCKER_VOLUMES_INSPECT()
 {
     SPACE_SIGNATURE="name [args]"
-    docker volume inspect "${@}"
+    docker volume inspect "$@"
 }
 
 #======================

@@ -134,17 +134,23 @@ DOCKER_VOLUMES_ENTER()
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_ENTER_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
     shift
 
     # These variables will get exported.
-    image="alpine"
-    flags="-it --rm -v ${name}:/mountvol"
-    container=
-    cmd="sh -c"
+    local image="alpine"
+    local flags="-it --rm -v ${name}:/mountvol"
+    local container=
+    local cmd="sh -c"
 
-    SPACE_ARGS="\"/mountvol\""
+    local SPACE_ARGS="\"/mountvol\""
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=============================
@@ -197,17 +203,23 @@ DOCKER_VOLUMES_FILELIST()
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_FILELIST_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
     shift
 
     # These variables will get exported.
-    image="alpine"
-    flags="-i --rm -v ${name}:/mountvol"
-    container=
-    cmd="sh -c"
+    local image="alpine"
+    local flags="-i --rm -v ${name}:/mountvol"
+    local container=
+    local cmd="sh -c"
 
-    SPACE_ARGS="\"/mountvol\""
+    local SPACE_ARGS="\"/mountvol\""
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=============================
@@ -256,6 +268,7 @@ DOCKER_VOLUMES_CHMOD()
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_CHMOD_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
     shift
@@ -267,12 +280,17 @@ DOCKER_VOLUMES_CHMOD()
     shift $(( $# > 0 ? 1 : 0 ))
 
     # These variables will get exported.
-    image="alpine"
-    flags="-i --rm -v ${name}:/mountvol"
-    container=
-    cmd="sh -c"
+    local image="alpine"
+    local flags="-i --rm -v ${name}:/mountvol"
+    local container=
+    local cmd="sh -c"
 
-    SPACE_ARGS="\"/mountvol\" \"${chmod}\" \"${chown}\""
+    local SPACE_ARGS="\"/mountvol\" \"${chmod}\" \"${chown}\""
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=====================
@@ -442,12 +460,13 @@ DOCKER_VOLUMES_RESTORE()
     SPACE_SIGNATURE="name archive.tar.gz|dir|- [empty preservepermissions]"
     SPACE_FN="_DOCKER_VOLUMES_RESTORE_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDDEP="PRINT"
 
     local name="${1}"
     shift
 
-    # Global due to possible import.
-    archive="${1}"
+    local archive="${1}"
     shift
 
     local empty="${1:-0}"
@@ -459,10 +478,10 @@ DOCKER_VOLUMES_RESTORE()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    flags="-i --rm -v ${name}:${targetdir}"
-    image="alpine"
-    container=
-    cmd="sh -c"
+    local flags="-i --rm -v ${name}:${targetdir}"
+    local image="alpine"
+    local container=
+    local cmd="sh -c"
 
     if [ "${archive}" = "-" ]; then
         if [ -t "0" ]; then
@@ -471,15 +490,25 @@ DOCKER_VOLUMES_RESTORE()
         fi
     else
         if [ -d "${archive}" ]; then
-            SPACE_OUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
-            SPACE_OUTERARGS="${archive}"
-            SPACE_REDIR="<\${archive}"
+            local SPACE_OUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
+            YIELD "SPACE_OUTER"
+            local SPACE_OUTERARGS="${archive}"
+            YIELD "SPACE_OUTERARGS"
+            local SPACE_REDIR="<\${archive}"
+            YIELD "SPACE_REDIR"
         else
-            SPACE_REDIR="<${archive}"
+            local SPACE_REDIR="<${archive}"
+            YIELD "SPACE_REDIR"
         fi
     fi
 
-    SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
+    local SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
+    YIELD "archive"
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=============================
@@ -578,6 +607,8 @@ DOCKER_VOLUMES_EMPTY()
     SPACE_SIGNATURE="name"
     SPACE_FN="_DOCKER_VOLUMES_EMPTY_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDDEP="PRINT"
 
     local name="${1}"
     shift
@@ -585,15 +616,20 @@ DOCKER_VOLUMES_EMPTY()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    image="alpine"
+    local image="alpine"
 
     # This variable will get exported.
-    flags="-i --rm -v ${name}:${targetdir}"
-    container=
-    cmd="sh -c"
+    local flags="-i --rm -v ${name}:${targetdir}"
+    local container=
+    local cmd="sh -c"
 
     PRINT "Emptying volume: ${name}."
-    SPACE_ARGS="\"${targetdir}\""
+    local SPACE_ARGS="\"${targetdir}\""
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=====================
@@ -636,6 +672,8 @@ DOCKER_VOLUMES_SNAPSHOT()
     SPACE_WRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=2034
     SPACE_FN="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDDEP="PRINT"
 
     local name="${1}"
     shift
@@ -646,10 +684,10 @@ DOCKER_VOLUMES_SNAPSHOT()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    image="alpine"
-    flags="-i --rm -v ${name}:${targetdir}"
-    container=
-    cmd="sh -c"
+    local image="alpine"
+    local flags="-i --rm -v ${name}:${targetdir}"
+    local container=
+    local cmd="sh -c"
 
     if [ "${archive}" = "-" ]; then
         if [ -t 1 ]; then
@@ -659,15 +697,22 @@ DOCKER_VOLUMES_SNAPSHOT()
     else
         if [ -d "${archive}" ]; then
             # shellcheck disable=2034
-            SPACE_REDIR="| tar -xzf - -C ${archive}"
+            local SPACE_REDIR="| tar -xzf - -C ${archive}"
+            YIELD "SPACE_REDIR"
         else
             # shellcheck disable=2034
-            SPACE_REDIR=">${archive}"
+            local SPACE_REDIR=">${archive}"
+            YIELD "SPACE_REDIR"
         fi
     fi
 
     # shellcheck disable=2034
-    SPACE_ARGS="${targetdir}"
+    local SPACE_ARGS="${targetdir}"
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
 }
 
 #=======================
@@ -817,7 +862,8 @@ DOCKER_VOLUMES_UP()
     SPACE_REDIR="<\$archive"
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_UP"
-    SPACE_DEP="STRING_SUBST"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDDEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -838,17 +884,23 @@ DOCKER_VOLUMES_UP()
     fi
     name="${name:+${name}_}"
 
-    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
+    local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
     # These variables will get exported.
     # shellcheck disable=SC2034
-    image="alpine"
-    container=
-    flags=
-    cmd="sh -c"
+    local image="alpine"
+    local container=
+    local flags=
+    local cmd="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in RUNOUTER.
-    SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
+    local SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
+    YIELD "image"
+    YIELD "flags"
+    YIELD "container"
+    YIELD "cmd"
+    YIELD "SPACE_ARGS"
+    YIELD "SPACE_OUTERARGS"
 }
 
 #============================
@@ -985,7 +1037,8 @@ DOCKER_VOLUMES_DOWN()
     SPACE_FN="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_DOWN"
-    SPACE_DEP="STRING_SUBST"
+    SPACE_BUILDDEP="STRING_SUBST"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local conffile="${1}"
     shift
@@ -1006,9 +1059,11 @@ DOCKER_VOLUMES_DOWN()
     fi
     name="${name:+${name}_}"
 
-    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
+    local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    SPACE_ARGS="\"\${name-}\""
+    local SPACE_ARGS="\"${name}\""
+    YIELD "SPACE_ARGS"
+    YIELD "SPACE_OUTERARGS"
 }
 
 #==============================
@@ -1082,7 +1137,8 @@ DOCKER_VOLUMES_PS()
     SPACE_FN="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_PS"
-    SPACE_DEP="STRING_SUBST"
+    SPACE_BUILDDEP="STRING_SUBST"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local conffile="${1}"
     shift
@@ -1103,9 +1159,11 @@ DOCKER_VOLUMES_PS()
     fi
     name="${name:+${name}_}"
 
-    SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
+    local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    SPACE_ARGS="\"\${name-}\""
+    local SPACE_ARGS="\"${name}\""
+    YIELD "SPACE_ARGS"
+    YIELD "SPACE_OUTERARGS"
 }
 
 #=============================
@@ -1155,6 +1213,8 @@ DOCKER_VOLUMES_SHEBANG()
     # shellcheck disable=SC2034
     SPACE_FN="NOOP"
     # shellcheck disable=SC2034
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDDEP="STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -1164,21 +1224,25 @@ DOCKER_VOLUMES_SHEBANG()
 
     if [ "${cmd}" = "help" ]; then
         # This is just because in this situation Space requires an actual RUN, but we are only interested in the outer cmd.
-        SPACE_FN="PRINT"
-        SPACE_ARGS="Done debug"
-        SPACE_OUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"
-        SPACE_OUTERARGS="\"${conffile}\""
+        local SPACE_FN="PRINT"
+        local SPACE_ARGS="Done debug"
+        local SPACE_OUTER="_DOCKER_VOLUMES_SHEBANG_OUTER_HELP"
+        local SPACE_OUTERARGS="\"${conffile}\""
+        YIELD "SPACE_OUTER"
+        YIELD "SPACE_OUTERARGS"
     elif [ "${cmd}" = "up" ]; then
-        SPACE_FN="DOCKER_VOLUMES_UP"
-        SPACE_ARGS="\"${conffile-}\""
+        local SPACE_FN="DOCKER_VOLUMES_UP"
+        local SPACE_ARGS="\"${conffile}\""
     elif [ "${cmd}" = "down" ]; then
-        SPACE_FN="DOCKER_VOLUMES_DOWN"
-        SPACE_ARGS="\"${conffile-}\""
+        local SPACE_FN="DOCKER_VOLUMES_DOWN"
+        local SPACE_ARGS="\"${conffile}\""
     elif [ "${cmd}" = "ps" ]; then
-        SPACE_FN="DOCKER_VOLUMES_PS"
-        SPACE_ARGS="\"${conffile-}\""
+        local SPACE_FN="DOCKER_VOLUMES_PS"
+        local SPACE_ARGS="\"${conffile}\""
     else
         PRINT "Unknown command: ${cmd}. Try up/down/ps/help" "error"
         return 1
     fi
+    YIELD "SPACE_FN"
+    YIELD "SPACE_ARGS"
 }

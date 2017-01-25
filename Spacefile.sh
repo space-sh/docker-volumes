@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-clone os file docker conf string
-
 #======================
 # DOCKER_VOLUMES_DEP_INSTALL
 #

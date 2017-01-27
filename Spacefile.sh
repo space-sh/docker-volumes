@@ -333,7 +333,7 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 # Inspect a volume.
 #
 # Parameters:
-#   $@: volume name
+#   $1: volume name
 #
 #=====================
 DOCKER_VOLUMES_INSPECT()

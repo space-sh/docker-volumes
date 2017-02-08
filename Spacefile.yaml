@@ -60,8 +60,11 @@ up:
             defined and optionally populate with data.
             Warning: this could destroy volumes data!
     _env:
-        - conffile:
-        - RUN: DOCKER_VOLUMES_UP -- ${conffile-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
+        - RUN: DOCKER_VOLUMES_UP -- ${conffile-} ${name-}
 
 down:
     _info:
@@ -69,15 +72,13 @@ down:
         desc: |
             Warning: this will really destroy all volumes and their data!
     _env:
-        - conffile:
-        - RUN: DOCKER_VOLUMES_DOWN -- ${conffile-}
+        - RUN: DOCKER_VOLUMES_DOWN -- ${conffile-} ${name-}
 
 ps:
     _info:
         title: Check statuses for volumes defined in conf file
     _env:
-        - conffile:
-        - RUN: DOCKER_VOLUMES_PS -- ${conffile-}
+        - RUN: DOCKER_VOLUMES_PS -- ${conffile-} ${name-}
 
 create:
     _info:
@@ -93,11 +94,15 @@ chmod:
     _info:
         title: Set the permissions and ownership of the mountpoint of a volume.
         desc: |
-            This is done from within a container who will mount the volume.
+            This is done from within a container which will mount the volume.
     _env:
         - name: ${name-}
         - chmod: ${chmod-}
         - chown: ${chown-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_CHMOD -- ${name-} ${chmod-} ${chown-}
 
 inspect:
@@ -118,6 +123,10 @@ filelist:
     _info:
         title: List all files inside a volume
     _env:
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_FILELIST
 
 rm:
@@ -142,9 +151,13 @@ inspect:
 
 enter:
     _info:
-        title: Enter into volume with a shell
+        title: Enter into volume using a shell
     _env:
         - name: ${name-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_ENTER -- ${name-}
 
 empty:
@@ -152,6 +165,10 @@ empty:
         title: Delete all files in a volume
     _env:
         - name: ${name-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_EMPTY -- ${name-}
 
 restore:
@@ -165,6 +182,10 @@ restore:
         - name: ${name-}
         - archive: ${archive-}
         - rmrf: ${rmrf-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_RESTORE -- ${name-} ${archive-} ${rmrf-}
 
 snapshot:
@@ -177,5 +198,9 @@ snapshot:
     _env:
         - name: ${name-}
         - archive: ${archive-}
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_SNAPSHOT -- ${name-} ${archive-}
 ...

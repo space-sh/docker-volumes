@@ -764,17 +764,25 @@ _DOCKER_VOLUMES_OUTER_UP()
     local RUN_ORIGINAL="${RUN}"
 
     local conf_lineno=0
-    while true; do
+    while [ "${conf_lineno}" -ne "-1" ]; do
         local name=
         local driver=
+        local type=
         local archive=
         local chmod=
         local chown=
         local empty=
 
-        if ! CONF_READ "${conffile}" "name driver archive chmod chown empty"; then
+        if ! CONF_READ "${conffile}" "name driver type archive chmod chown empty"; then
             PRINT "Could not read conf file: ${conffile}." "error"
             return 1
+        fi
+        if [ -z "${name}" ]; then
+            continue
+        fi
+        if [ "${type}" != "persistent" ]; then
+            PRINT "Skipping non-persistent volume: ${name}".
+            continue
         fi
 
         PRINT "Populate volume: ${prefix}${name}."
@@ -802,6 +810,7 @@ _DOCKER_VOLUMES_OUTER_UP()
         fi
 
         RUN="${RUN_ORIGINAL}"
+        STRING_SUBST "RUN" "{DOCKERFLAGS}" "${flags}"
         STRING_SUBST "RUN" "{TARGETDIR}" "/volume"
         STRING_SUBST "RUN" "{CHMOD}" "${chmod}"
         STRING_SUBST "RUN" "{CHOWN}" "${chown}"
@@ -813,11 +822,6 @@ _DOCKER_VOLUMES_OUTER_UP()
         if [ -n "${tempfile}" ]; then
             PRINT "Removing temporary archive."
             rm "${tempfile}"
-        fi
-
-        if [ "${conf_lineno}" -eq 0 ]; then
-            # Read done
-            break
         fi
     done
 }
@@ -888,7 +892,7 @@ DOCKER_VOLUMES_UP()
     # shellcheck disable=SC2034
     local image="alpine"
     local container=
-    local flags=
+    local flags="{DOCKERFLAGS}"
     local cmd="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in RUNOUTER.
@@ -970,7 +974,7 @@ _DOCKER_VOLUMES_UP_IMPL()
 _DOCKER_VOLUMES_OUTER_DOWN()
 {
     SPACE_SIGNATURE="conffile [prefix]"
-    SPACE_DEP="CONF_READ"
+    SPACE_DEP="CONF_READ STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -978,8 +982,11 @@ _DOCKER_VOLUMES_OUTER_DOWN()
     local prefix="${1-}"
     shift $(( $# > 0 ? 1 : 0 ))
 
+    # We save the wrapped RUN because we want to alter it in each iteration.
+    local RUN_ORIGINAL="${RUN}"
+
     local conf_lineno=0
-    while true; do
+    while [ "${conf_lineno}" -ne "-1" ]; do
         local name=
         local driver=
 
@@ -987,18 +994,18 @@ _DOCKER_VOLUMES_OUTER_DOWN()
             PRINT "Could not read conf file: ${conffile}." "error"
             return 1
         fi
+        if [ -z "${name}" ]; then
+            continue
+        fi
 
         name="${prefix}${name}"
 
-        # We here have block of variables from conf file.
         PRINT "Remove volume: ${name}."
 
-        _RUN_
+        RUN="${RUN_ORIGINAL}"
+        STRING_SUBST "RUN" "{VOLUMENAME}" "${name}"
 
-        if [ "${conf_lineno}" -eq 0 ]; then
-            # Read done
-            break
-        fi
+        _RUN_
     done
 }
 
@@ -1059,7 +1066,7 @@ DOCKER_VOLUMES_DOWN()
 
     local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    local SPACE_ARGS="\"${name}\""
+    local SPACE_ARGS="\"{VOLUMENAME}\""
     YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }
@@ -1074,7 +1081,7 @@ DOCKER_VOLUMES_DOWN()
 _DOCKER_VOLUMES_OUTER_PS()
 {
     SPACE_SIGNATURE="conffile [prefix]"
-    SPACE_DEP="CONF_READ"
+    SPACE_DEP="CONF_READ STRING_SUBST"
 
     local conffile="${1}"
     shift
@@ -1082,24 +1089,31 @@ _DOCKER_VOLUMES_OUTER_PS()
     local prefix="${1-}"
     shift $(( $# > 0 ? 1 : 0 ))
 
+    # We save the wrapped RUN because we want to alter it in each iteration.
+    local RUN_ORIGINAL="${RUN}"
+
     local conf_lineno=0
-    while true; do
+    while [ "${conf_lineno}" -ne "-1" ]; do
         local name=
 
         if ! CONF_READ "${conffile}" "name"; then
             PRINT "Could not read conf file: ${conffile}." "error"
             return 1
         fi
+        if [ -z "${name}" ]; then
+            continue
+        fi
 
         name="${prefix}${name}"
 
-        _RUN_
+        PRINT "Inspect volume: ${name}."
 
-        if [ "${conf_lineno}" -eq 0 ]; then
-            # Read done
-            break
-        fi
+        RUN="${RUN_ORIGINAL}"
+        STRING_SUBST "RUN" "{VOLUMENAME}" "${name}"
+
+        _RUN_
     done
+    return 0
 }
 
 #=======================
@@ -1159,7 +1173,7 @@ DOCKER_VOLUMES_PS()
 
     local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
 
-    local SPACE_ARGS="\"${name}\""
+    local SPACE_ARGS="\"{VOLUMENAME}\""
     YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }

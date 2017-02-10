@@ -53,34 +53,34 @@ _shebang:
             Remember to chmod +x it first.
     _env:
         - RUN: DOCKER_VOLUMES_SHEBANG
+batch:
+    create:
+        _info:
+            title: Deploy volumes defined in conf file
+            desc: |
+                Read conf file to create all volumes
+                defined and optionally populate with data.
+                Warning: this could destroy volumes data!
+        _env:
+            - image: ${image-}
+            - flags: ${flags-}
+            - container: ${container-}
+            - cmd: ${cmd-}
+            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- ${conffile-} ${name-}
 
-up:
-    _info:
-        title: Deploy volumes defined in conf file
-        desc: |
-            Read conf file to create all volumes
-            defined and optionally populate with data.
-            Warning: this could destroy volumes data!
-    _env:
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_UP -- ${conffile-} ${name-}
+    rm:
+        _info:
+            title: Undeploy (destroy) volumes defined in conf file
+            desc: |
+                Warning: this will really destroy all volumes and their data!
+        _env:
+            - RUN: DOCKER_VOLUMES_BATCH_RM -- ${conffile-} ${name-}
 
-down:
-    _info:
-        title: Undeploy (destroy) volumes defined in conf file
-        desc: |
-            Warning: this will really destroy all volumes and their data!
-    _env:
-        - RUN: DOCKER_VOLUMES_DOWN -- ${conffile-} ${name-}
-
-ps:
-    _info:
-        title: Check statuses for volumes defined in conf file
-    _env:
-        - RUN: DOCKER_VOLUMES_PS -- ${conffile-} ${name-}
+    inspect:
+        _info:
+            title: Check statuses for volumes defined in conf file
+        _env:
+            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- ${conffile-} ${name-}
 
 create:
     _info:

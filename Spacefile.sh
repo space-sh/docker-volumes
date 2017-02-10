@@ -744,12 +744,12 @@ _DOCKER_VOLUMES_SNAPSHOT_IMPL()
 
 #==============================
 #
-# _DOCKER_VOLUMES_OUTER_UP
+# _DOCKER_VOLUMES_OUTER_BATCH_CREATE
 #
-# The outer function of DOCKER_VOLUMES_UP
+# The outer function of DOCKER_VOLUMES_BATCH_CREATE
 #
 #==============================
-_DOCKER_VOLUMES_OUTER_UP()
+_DOCKER_VOLUMES_OUTER_BATCH_CREATE()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_DEP="STRING_SUBST CONF_READ"
@@ -827,7 +827,7 @@ _DOCKER_VOLUMES_OUTER_UP()
 }
 
 #=======================
-# DOCKER_VOLUMES_UP
+# DOCKER_VOLUMES_BATCH_CREATE
 #
 # Create and populate docker volumes defined
 # in conf file.
@@ -852,18 +852,18 @@ _DOCKER_VOLUMES_OUTER_UP()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUMES_UP()
+DOCKER_VOLUMES_BATCH_CREATE()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
-    SPACE_FN="_DOCKER_VOLUMES_UP_IMPL"
+    SPACE_FN="_DOCKER_VOLUMES_BATCH_CREATE_IMPL"
     # shellcheck disable=SC2034
     SPACE_WRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=SC2034
     SPACE_REDIR="<\$archive"
     # shellcheck disable=SC2034
-    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_UP"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_CREATE"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="STRING_SUBST"
 
@@ -906,9 +906,9 @@ DOCKER_VOLUMES_UP()
 }
 
 #============================
-# _DOCKER_VOLUMES_UP_IMPL
+# _DOCKER_VOLUMES_BATCH_CREATE_IMPL
 #
-# Implementation for DOCKER_VOLUMES_UP
+# Implementation for DOCKER_VOLUMES_BATCH_CREATE
 #
 # Parameters:
 #   $1: targetdir: the directory inside the container to where the volume is mounted.
@@ -921,7 +921,7 @@ DOCKER_VOLUMES_UP()
 #   non-zero on error
 #
 #============================
-_DOCKER_VOLUMES_UP_IMPL()
+_DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 {
     SPACE_SIGNATURE="targetdir chmod chown empty archive"
     SPACE_DEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
@@ -966,12 +966,12 @@ _DOCKER_VOLUMES_UP_IMPL()
 
 #==============================
 #
-# _DOCKER_VOLUMES_OUTER_DOWN
+# _DOCKER_VOLUMES_OUTER_BATCH_RM
 #
-# The outer function of DOCKER_VOLUMES_DOWN
+# The outer function of DOCKER_VOLUMES_BATCH_RM
 #
 #==============================
-_DOCKER_VOLUMES_OUTER_DOWN()
+_DOCKER_VOLUMES_OUTER_BATCH_RM()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_DEP="CONF_READ STRING_SUBST"
@@ -1010,7 +1010,7 @@ _DOCKER_VOLUMES_OUTER_DOWN()
 }
 
 #=======================
-# DOCKER_VOLUMES_DOWN
+# DOCKER_VOLUMES_BATCH_RM
 #
 # Delete docker volumes defined in conf file.
 #
@@ -1034,14 +1034,14 @@ _DOCKER_VOLUMES_OUTER_DOWN()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUMES_DOWN()
+DOCKER_VOLUMES_BATCH_RM()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
     SPACE_FN="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
-    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_DOWN"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_RM"
     SPACE_BUILDDEP="STRING_SUBST"
     SPACE_BUILDARGS="${SPACE_ARGS}"
 
@@ -1073,12 +1073,12 @@ DOCKER_VOLUMES_DOWN()
 
 #==============================
 #
-# _DOCKER_VOLUMES_OUTER_PS
+# _DOCKER_VOLUMES_OUTER_BATCH_INSPECT
 #
-# The outer function of DOCKER_VOLUMES_PS
+# The outer function of DOCKER_VOLUMES_BATCH_INSPECT
 #
 #==============================
-_DOCKER_VOLUMES_OUTER_PS()
+_DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
 {
     SPACE_SIGNATURE="conffile [prefix]"
     SPACE_DEP="CONF_READ STRING_SUBST"
@@ -1117,7 +1117,7 @@ _DOCKER_VOLUMES_OUTER_PS()
 }
 
 #=======================
-# DOCKER_VOLUMES_PS
+# DOCKER_VOLUMES_BATCH_INSPECT
 #
 # Inspect one or many docker volumes defined in conf file.
 #
@@ -1141,14 +1141,14 @@ _DOCKER_VOLUMES_OUTER_PS()
 #   non-zero on error.
 #
 #=======================
-DOCKER_VOLUMES_PS()
+DOCKER_VOLUMES_BATCH_INSPECT()
 {
     # shellcheck disable=SC2034
     SPACE_SIGNATURE="conffile [name]"
     # shellcheck disable=SC2034
     SPACE_FN="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
-    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_PS"
+    SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_INSPECT"
     SPACE_BUILDDEP="STRING_SUBST"
     SPACE_BUILDARGS="${SPACE_ARGS}"
 
@@ -1194,7 +1194,7 @@ _DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
         printf "%s\n" "This is the SpaceGal wrapper over docker-volumes.
 Pass in a COMMAND as: -- command.
     up
-    down
+    rm
     ps
 
 Example:
@@ -1243,13 +1243,13 @@ DOCKER_VOLUMES_SHEBANG()
         YIELD "SPACE_OUTER"
         YIELD "SPACE_OUTERARGS"
     elif [ "${cmd}" = "up" ]; then
-        local SPACE_FN="DOCKER_VOLUMES_UP"
+        local SPACE_FN="DOCKER_VOLUMES_BATCH_CREATE"
         local SPACE_ARGS="\"${conffile}\""
-    elif [ "${cmd}" = "down" ]; then
-        local SPACE_FN="DOCKER_VOLUMES_DOWN"
+    elif [ "${cmd}" = "rm" ]; then
+        local SPACE_FN="DOCKER_VOLUMES_BATCH_RM"
         local SPACE_ARGS="\"${conffile}\""
     elif [ "${cmd}" = "ps" ]; then
-        local SPACE_FN="DOCKER_VOLUMES_PS"
+        local SPACE_FN="DOCKER_VOLUMES_BATCH_INSPECT"
         local SPACE_ARGS="\"${conffile}\""
     else
         PRINT "Unknown command: ${cmd}. Try up/down/ps/help" "error"

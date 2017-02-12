@@ -577,6 +577,7 @@ _DOCKER_VOLUMES_RESTORE_IMPL()
 
     PRINT "Restore archive into volume"
     tar -xz -C "${targetdir}"
+    # shellcheck disable=2181
     if [ "$?" -gt 0 ]; then
         PRINT "Error for tar -xz -C ${targetdir}" "error"
         return 1
@@ -906,6 +907,10 @@ DOCKER_VOLUMES_BATCH_CREATE()
     YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }
+
+
+# Disable warning about indirectly reading program exit status code
+# shellcheck disable=2181
 
 #============================
 # _DOCKER_VOLUMES_BATCH_CREATE_IMPL

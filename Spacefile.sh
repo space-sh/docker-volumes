@@ -170,6 +170,7 @@ _DOCKER_VOLUMES_ENTER_IMPL()
         return 1
     fi
 
+    # shellcheck disable=2034
     cd "${targetdir}" &&
     SPACE_FNNAME=""
     PRINT "Here we are, behold your volume and all it's files." "ok"
@@ -891,6 +892,7 @@ DOCKER_VOLUMES_BATCH_CREATE()
     # These variables will get exported.
     # shellcheck disable=SC2034
     local image="alpine"
+    # shellcheck disable=SC2034
     local container=
     local flags="{DOCKERFLAGS}"
     local cmd="sh -c"
@@ -1080,7 +1082,9 @@ DOCKER_VOLUMES_BATCH_RM()
 #==============================
 _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
 {
+    # shellcheck disable=2034
     SPACE_SIGNATURE="conffile [prefix]"
+    # shellcheck disable=2034
     SPACE_DEP="CONF_READ STRING_SUBST"
 
     local conffile="${1}"
@@ -1203,6 +1207,10 @@ Example:
 "
     #_RUN_
 }
+
+
+# Disable warning about unused variable
+# shellcheck disable=2034
 
 #=======================
 # DOCKER_VOLUMES_SHEBANG

@@ -1,20 +1,22 @@
 # Docker container management. | [![build status](https://gitlab.com/space-sh/docker-volumes/badges/master/build.svg)](https://gitlab.com/space-sh/docker-volumes/commits/master)
 
 
+## /batch/
+	
+
++ create
++ inspect
++ rm
+
 ## /chmod/
 	Set the permissions and ownership of the mountpoint of a volume.
 
-	This is done from within a container who will mount the volume.
+	This is done from within a container which will mount the volume.
+	
 
 
 ## /create/
 	Create a volume
-
-
-## /down/
-	Undeploy (destroy) volumes defined in conf file
-
-	Warning: this will really destroy all volumes and their data!
 
 
 ## /empty/
@@ -22,7 +24,7 @@
 
 
 ## /enter/
-	Enter into volume with a shell
+	Enter into volume using a shell
 
 
 ## /exists/
@@ -43,14 +45,11 @@
 	Downloads and installs the latest Docker Engine from Docker.
 	Also adds the targetuser to the docker group.
 	Will reinstall if already installed.
+	
 
 
 ## /ls/
 	List all volumes
-
-
-## /ps/
-	Check statuses for volumes defined in conf file
 
 
 ## /restore/
@@ -59,6 +58,7 @@
 	Archive, either path to tar.gz file,
 	path to a directory to restore from
 	or "-" for stdin.
+	
 
 
 ## /rm/
@@ -71,14 +71,7 @@
 	Archive is either path to a tar.gz file,
 	path to a directory to store snapshot in
 	or "-" for stdout.
-
-
-## /up/
-	Deploy volumes defined in conf file
-
-	Read conf file to create all volumes
-	defined and optionally populate with data.
-	Warning: this could destroy volumes data!
+	
 
 
 # Functions 
@@ -224,7 +217,7 @@ The implementation for DOCKER\_VOLUMES\_CHMOD.
 Inspect a volume.  
   
 ### Parameters:  
-- $@: volume name  
+- $1: volume name  
   
   
   
@@ -363,16 +356,16 @@ USed by DOCKER\_VOLUMES\_SNAPSHOT
   
   
   
-## \_DOCKER\_VOLUMES\_OUTER\_UP()  
+## \_DOCKER\_VOLUMES\_OUTER\_BATCH\_CREATE()  
   
   
   
   
-The outer function of DOCKER\_VOLUMES\_UP  
+The outer function of DOCKER\_VOLUMES\_BATCH\_CREATE  
   
   
   
-## DOCKER\_VOLUMES\_UP()  
+## DOCKER\_VOLUMES\_BATCH\_CREATE()  
   
   
   
@@ -400,11 +393,11 @@ chown   set to have the mountpoint be owned by that user:group.
   
   
   
-## \_DOCKER\_VOLUMES\_UP\_IMPL()  
+## \_DOCKER\_VOLUMES\_BATCH\_CREATE\_IMPL()  
   
   
   
-Implementation for DOCKER\_VOLUMES\_UP  
+Implementation for DOCKER\_VOLUMES\_BATCH\_CREATE  
   
 ### Parameters:  
 - $1: targetdir: the directory inside the container to where the volume is mounted.  
@@ -418,16 +411,16 @@ Implementation for DOCKER\_VOLUMES\_UP
   
   
   
-## \_DOCKER\_VOLUMES\_OUTER\_DOWN()  
+## \_DOCKER\_VOLUMES\_OUTER\_BATCH\_RM()  
   
   
   
   
-The outer function of DOCKER\_VOLUMES\_DOWN  
+The outer function of DOCKER\_VOLUMES\_BATCH\_RM  
   
   
   
-## DOCKER\_VOLUMES\_DOWN()  
+## DOCKER\_VOLUMES\_BATCH\_RM()  
   
   
   
@@ -454,16 +447,16 @@ chown   set to have the mountpoint be owned by that user:group.
   
   
   
-## \_DOCKER\_VOLUMES\_OUTER\_PS()  
+## \_DOCKER\_VOLUMES\_OUTER\_BATCH\_INSPECT()  
   
   
   
   
-The outer function of DOCKER\_VOLUMES\_PS  
+The outer function of DOCKER\_VOLUMES\_BATCH\_INSPECT  
   
   
   
-## DOCKER\_VOLUMES\_PS()  
+## DOCKER\_VOLUMES\_BATCH\_INSPECT()  
   
   
   

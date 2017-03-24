@@ -144,13 +144,6 @@ ls:
     _env:
         - RUN: DOCKER_VOLUMES_LS
 
-inspect:
-    _info:
-        title: Inspect a volume
-    _env:
-        - name: ${name-}
-        - RUN: DOCKER_VOLUMES_INSPECT -- ${name-}
-
 enter:
     _info:
         title: Enter into volume using a shell

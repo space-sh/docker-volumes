@@ -19,7 +19,7 @@ _clone:
 @include: |/_clone/
 
 _info:
-    title: Docker container management.
+    title: Docker volumes management.
 
 _dep_install:
     _info:

@@ -339,7 +339,7 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 #=====================
 DOCKER_VOLUMES_INSPECT()
 {
-    SPACE_SIGNATURE="name [name]"
+    SPACE_SIGNATURE="name"
     SPACE_DEP="PRINT"
 
     local name="${1}"
@@ -461,6 +461,7 @@ DOCKER_VOLUMES_RESTORE()
     SPACE_WRAP="DOCKER_RUN_WRAP"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="PRINT"
+    SPACE_BUILDENV="CWD"
 
     local name="${1}"
     shift
@@ -488,7 +489,7 @@ DOCKER_VOLUMES_RESTORE()
             return 1
         fi
     else
-        if [ -d "${archive}" ]; then
+        if [ "${archive:0:1}" == "/" -a -d "${archive}" ] || [ "${archive:0:1}" != "/" -a -d "${CWD}/${archive}" ]; then
             local SPACE_OUTER="_DOCKER_VOLUMES_RESTORE_OUTER"
             YIELD "SPACE_OUTER"
             local SPACE_OUTERARGS="${archive}"
@@ -674,6 +675,7 @@ DOCKER_VOLUMES_SNAPSHOT()
     SPACE_FN="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="PRINT"
+    SPACE_BUILDENV="CWD"
 
     local name="${1}"
     shift
@@ -695,7 +697,7 @@ DOCKER_VOLUMES_SNAPSHOT()
             return 1
         fi
     else
-        if [ -d "${archive}" ]; then
+        if [ "${archive:0:1}" == "/" -a -d "${archive}" ] || [ "${archive:0:1}" != "/" -a -d "${CWD}/${archive}" ]; then
             # shellcheck disable=2034
             local SPACE_REDIR="| tar -xzf - -C ${archive}"
             YIELD "SPACE_REDIR"
@@ -783,7 +785,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
             continue
         fi
         if [ "${type}" != "persistent" ]; then
-            PRINT "Skipping non-persistent volume: ${name}".
+            PRINT "Skipping non-persistent volume: ${name}."
             continue
         fi
 
@@ -866,8 +868,9 @@ DOCKER_VOLUMES_BATCH_CREATE()
     SPACE_REDIR="<\$archive"
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_CREATE"
-    SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="STRING_SUBST"
+    SPACE_BUILDARGS="${SPACE_ARGS}"     # Pass the args into this build function.
+    SPACE_ARGS="{NAME}"                 # We put this after because it's prior value is used above.
 
     local conffile="${1}"
     shift
@@ -883,7 +886,7 @@ DOCKER_VOLUMES_BATCH_CREATE()
         STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
-        local name="${1}"
+        name="${1}"
         shift
     fi
     name="${name:+${name}_}"
@@ -996,23 +999,29 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
     while [ "${conf_lineno}" -ne "-1" ]; do
         local name=
         local driver=
+        local type=
 
-        if ! CONF_READ "${conffile}" "name driver"; then
+        if ! CONF_READ "${conffile}" "name driver type"; then
             PRINT "Could not read conf file: ${conffile}." "error"
             return 1
         fi
         if [ -z "${name}" ]; then
             continue
         fi
+        if [ "${type}" = "persistent" ]; then
+            PRINT "Skipping persistent volume: ${name}"
+            continue
+        fi
 
         name="${prefix}${name}"
 
         PRINT "Remove volume: ${name}."
+        continue
 
         RUN="${RUN_ORIGINAL}"
-        STRING_SUBST "RUN" "{VOLUMENAME}" "${name}"
-
+        STRING_SUBST "RUN" "{NAME}" "${name}"
         _RUN_
+        : # Clear error
     done
 }
 
@@ -1050,7 +1059,8 @@ DOCKER_VOLUMES_BATCH_RM()
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_RM"
     SPACE_BUILDDEP="STRING_SUBST"
-    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDARGS="${SPACE_ARGS}"     # Pass the args into this build function.
+    SPACE_ARGS="{NAME}"                 # We put this after because it's prior value is used above.
 
     local conffile="${1}"
     shift
@@ -1066,15 +1076,12 @@ DOCKER_VOLUMES_BATCH_RM()
         STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
-        local name="${1}"
+        name="${1}"
         shift
     fi
     name="${name:+${name}_}"
 
     local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
-
-    local SPACE_ARGS="\"{VOLUMENAME}\""
-    YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }
 
@@ -1118,8 +1125,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
         PRINT "Inspect volume: ${name}."
 
         RUN="${RUN_ORIGINAL}"
-        STRING_SUBST "RUN" "{VOLUMENAME}" "${name}"
-
+        STRING_SUBST "RUN" "{NAME}" "${name}"
         _RUN_
     done
     return 0
@@ -1159,7 +1165,8 @@ DOCKER_VOLUMES_BATCH_INSPECT()
     # shellcheck disable=SC2034
     SPACE_OUTER="_DOCKER_VOLUMES_OUTER_BATCH_INSPECT"
     SPACE_BUILDDEP="STRING_SUBST"
-    SPACE_BUILDARGS="${SPACE_ARGS}"
+    SPACE_BUILDARGS="${SPACE_ARGS}"     # Pass the args into this build function.
+    SPACE_ARGS="{NAME}"                 # We put this after because it's prior value is used above.
 
     local conffile="${1}"
     shift
@@ -1175,15 +1182,12 @@ DOCKER_VOLUMES_BATCH_INSPECT()
         STRING_SUBST "name" "." "" 1
     else
         # Prefix is given, could be "".
-        local name="${1}"
+        name="${1}"
         shift
     fi
     name="${name:+${name}_}"
 
     local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
-
-    local SPACE_ARGS="\"{VOLUMENAME}\""
-    YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }
 
@@ -1202,12 +1206,12 @@ _DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
 
         printf "%s\n" "This is the SpaceGal wrapper over docker-volumes.
 Pass in a COMMAND as: -- command.
-    up
+    create
     rm
-    ps
+    inspect
 
 Example:
-    ${conffile} -- up
+    ${conffile} -- create
 
 "
     #_RUN_
@@ -1239,7 +1243,7 @@ DOCKER_VOLUMES_SHEBANG()
     SPACE_FN="NOOP"
     # shellcheck disable=SC2034
     SPACE_BUILDARGS="${SPACE_ARGS}"
-    SPACE_BUILDDEP="STRING_SUBST"
+    SPACE_BUILDDEP="PRINT"
 
     local conffile="${1}"
     shift
@@ -1255,17 +1259,17 @@ DOCKER_VOLUMES_SHEBANG()
         local SPACE_OUTERARGS="\"${conffile}\""
         YIELD "SPACE_OUTER"
         YIELD "SPACE_OUTERARGS"
-    elif [ "${cmd}" = "up" ]; then
+    elif [ "${cmd}" = "create" ]; then
         local SPACE_FN="DOCKER_VOLUMES_BATCH_CREATE"
         local SPACE_ARGS="\"${conffile}\""
     elif [ "${cmd}" = "rm" ]; then
         local SPACE_FN="DOCKER_VOLUMES_BATCH_RM"
         local SPACE_ARGS="\"${conffile}\""
-    elif [ "${cmd}" = "ps" ]; then
+    elif [ "${cmd}" = "inspect" ]; then
         local SPACE_FN="DOCKER_VOLUMES_BATCH_INSPECT"
         local SPACE_ARGS="\"${conffile}\""
     else
-        PRINT "Unknown command: ${cmd}. Try up/down/ps/help" "error"
+        PRINT "Unknown command: ${cmd}. Try create/rm/inspect/help" "error"
         return 1
     fi
     YIELD "SPACE_FN"

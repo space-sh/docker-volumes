@@ -52,6 +52,10 @@ _shebang:
             as the first line to make the yaml file itself runnable.
             Remember to chmod +x it first.
     _env:
+        - image: ${image-}
+        - flags: ${flags-}
+        - container: ${container-}
+        - cmd: ${cmd-}
         - RUN: DOCKER_VOLUMES_SHEBANG
 batch:
     create:

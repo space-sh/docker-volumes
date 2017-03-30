@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-_source "${DIR}/../Spacefile.sh"
-
-clone "docker-volumes"
-
 _DOCKER_CHECK_NO_VOLUME ()
 {
     SPACE_SIGNATURE="name"

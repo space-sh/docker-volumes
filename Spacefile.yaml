@@ -52,10 +52,10 @@ _shebang:
             as the first line to make the yaml file itself runnable.
             Remember to chmod +x it first.
     _env:
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
+        - image:
+        - flags:
+        - container:
+        - cmd:
         - RUN: DOCKER_VOLUMES_SHEBANG
 batch:
     create:
@@ -66,11 +66,20 @@ batch:
                 defined and optionally populate with data.
                 Warning: this could destroy volumes data!
         _env:
-            - image: ${image-}
-            - flags: ${flags-}
-            - container: ${container-}
-            - cmd: ${cmd-}
-            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- ${conffile-} ${name-}
+            - image:
+            - flags:
+            - container:
+            - cmd:
+            - name:
+                title: Optional prefix to volume name(s)
+            - conffile:
+                title: The volumes conf file
+                completion: G
+            - SPACE_ARGS:
+                arguments:
+                    -
+                        completion: G
+            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- "${conffile}" ${name-}
 
     rm:
         _info:
@@ -78,69 +87,135 @@ batch:
             desc: |
                 Warning: this will really destroy all volumes and their data!
         _env:
-            - RUN: DOCKER_VOLUMES_BATCH_RM -- ${conffile-} ${name-}
+            - name:
+                title: Optional prefix to volume name(s)
+            - conffile:
+                title: The volumes conf file
+                completion: G
+            - SPACE_ARGS:
+                arguments:
+                    -
+                        completion: G
+            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" ${name-}
 
     inspect:
         _info:
             title: Check statuses for volumes defined in conf file
         _env:
-            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- ${conffile-} ${name-}
+            - name:
+                title: Optional prefix to volume name(s)
+            - conffile:
+                title: The volumes conf file
+                completion: G
+            - SPACE_ARGS:
+                arguments:
+                    -
+                        completion: G
+            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- "${conffile}" ${name-}
 
 create:
     _info:
         title: Create a volume
     _env:
-        - name: ${name-}
-        - driver: ${driver-}
-        - opts: ${opts-}
-        - labels: ${labels-}
-        - RUN: DOCKER_VOLUMES_CREATE -- ${name-} ${driver-} ${opts-} ${labels-}
+        - name:
+            title: Name of the volume
+        - driver:
+            title: Driver, optional.
+            values:
+                - local
+        - opts:
+            title: Options, optional
+        - labels:
+            title: Labels, optional
+        - RUN: DOCKER_VOLUMES_CREATE -- "${name}" ${driver-} ${opts-} ${labels-}
 
 chmod:
+    @prefix: @{PARENTPATH}
+    @dotdot: prefix
     _info:
         title: Set the permissions and ownership of the mountpoint of a volume.
         desc: |
             This is done from within a container which will mount the volume.
     _env:
-        - name: ${name-}
-        - chmod: ${chmod-}
-        - chown: ${chown-}
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_CHMOD -- ${name-} ${chmod-} ${chown-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - chmod:
+            values:
+                - permissions
+        - chown:
+            values:
+                - owner
+        - image:
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+                -
+                    values:
+                        - permissions
+                -
+                    values:
+                        - owner
+        - RUN: DOCKER_VOLUMES_CHMOD -- "${name}" ${chmod-} ${chown-}
 
 inspect:
     _info:
         title: Check simple status of volume
     _env:
-        - name: ${name-}
-        - RUN: DOCKER_VOLUMES_INSPECT -- ${name-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_INSPECT -- "${name}"
 
 exists:
     _info:
         title: Check if a volume exists
     _env:
-        - name: ${name-}
-        - RUN: DOCKER_VOLUMES_EXISTS -- ${name-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_EXISTS -- "${name}"
 
 filelist:
     _info:
         title: List all files inside a volume
     _env:
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_FILELIST
+        - image:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_FILELIST -- "${name}"
 
 rm:
     _info:
         title: Remove a volume
     _env:
-        - name: ${name-}
-        - RUN: DOCKER_VOLUMES_RM -- ${name-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_RM -- "${name}"
 
 ls:
     _info:
@@ -152,23 +227,35 @@ enter:
     _info:
         title: Enter into volume using a shell
     _env:
-        - name: ${name-}
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_ENTER -- ${name-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - image:
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_ENTER -- "${name}"
 
 empty:
     _info:
         title: Delete all files in a volume
     _env:
-        - name: ${name-}
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_EMPTY -- ${name-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - image:
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_EMPTY -- "${name}"
 
 restore:
     _info:
@@ -178,14 +265,32 @@ restore:
             path to a directory to restore from
             or "-" for stdin.
     _env:
-        - name: ${name-}
-        - archive: ${archive-}
-        - rmrf: ${rmrf-}
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_RESTORE -- ${name-} ${archive-} ${rmrf-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - archive:
+            title: tar.gz archive, directory or -
+            completion: G
+        - rmrf:
+            title: set to 1 to empty the volume first.
+            values:
+                - 0
+                - 1
+        - image:
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+                -
+                    completion: G
+                -
+                    values:
+                        - 0
+                        - 1
+        - RUN: DOCKER_VOLUMES_RESTORE -- "${name}" "${archive}" ${rmrf-}
 
 snapshot:
     _info:
@@ -195,11 +300,26 @@ snapshot:
             path to a directory to store snapshot in
             or "-" for stdout.
     _env:
-        - name: ${name-}
-        - archive: ${archive-}
-        - image: ${image-}
-        - flags: ${flags-}
-        - container: ${container-}
-        - cmd: ${cmd-}
-        - RUN: DOCKER_VOLUMES_SNAPSHOT -- ${name-} ${archive-}
+        - name:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - archive:
+            title: tar.gz archive, directory or -
+            completion: G
+        - image:
+        - flags:
+        - container:
+        - cmd:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+                -
+                    completion: G
+        - RUN: DOCKER_VOLUMES_SNAPSHOT -- "${name}" "${archive}"
+
+_list:
+    @include: docker-volumes|/ls/
+    _env:
+        - SPACE_ARGS: -q -|
 ...

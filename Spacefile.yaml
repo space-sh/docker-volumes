@@ -322,4 +322,6 @@ _list:
     @include: docker-volumes|/ls/
     _env:
         - SPACE_ARGS: -q -|
+        - SPACE_REDIR: "2>/dev/null"
+        - SPACE_SILENT: 1
 ...

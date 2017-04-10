@@ -202,8 +202,6 @@ filelist:
             title: Name of the volume
             completion: @{prefix}_list/
         - image:
-            title: Name of the volume
-            completion: @{prefix}_list/
         - flags:
         - container:
         - cmd:
@@ -342,5 +340,6 @@ _list:
     _env:
         - SPACE_ARGS: -q -|
         - SPACE_REDIR: "2>/dev/null"
-        - SPACE_SILENT: 1
+        - SPACE_MUTE_EXIT: 1
+        - SPACE_LOG_LEVEL: 0
 ...

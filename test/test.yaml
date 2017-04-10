@@ -201,6 +201,6 @@ _clean:
     _info:
         title: Remove volume.
     _env:
-        - SPACE_SILENT: ${SPACE_SILENT-1}
+        - SPACE_MUTE_EXIT: ${SPACE_MUTE_EXIT-1}
         - SPACE_WRAP: !unset
     @include: @{DIR}/../Spacefile.yaml|/rm/

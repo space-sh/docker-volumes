@@ -334,25 +334,17 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 # Inspect a volume.
 #
 # Parameters:
-#   $1: volume name
+#   $@: volume(s)
 #
 #=====================
 DOCKER_VOLUMES_INSPECT()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="volume [volume]"
     SPACE_DEP="PRINT"
 
-    local name="${1}"
-    shift
+    PRINT "Inspect volume(s): $*"
 
-    PRINT "Volume inspect for: ${name}"
-
-    local s=
-    if ! s="$(docker volume inspect ${name})"; then
-        return 1
-    fi
-
-    printf "%s\n" "${s}"
+    docker volume inspect "$@"
 }
 
 #=====================
@@ -409,21 +401,6 @@ DOCKER_VOLUMES_EXISTS()
     else
         return 0
     fi
-}
-
-#=====================
-# DOCKER_VOLUMES_INSPECT
-#
-# Run docker volume inspect
-#
-# Parameters:
-#   $@: options
-#
-#=====================
-DOCKER_VOLUMES_INSPECT()
-{
-    SPACE_SIGNATURE="name [args]"
-    docker volume inspect "$@"
 }
 
 #======================
@@ -1214,9 +1191,7 @@ Example:
     ${conffile} -- create
 
 "
-    #_RUN_
 }
-
 
 # Disable warning about unused variable
 # shellcheck disable=2034

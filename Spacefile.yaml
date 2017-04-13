@@ -70,7 +70,7 @@ batch:
             - flags:
             - container:
             - cmd:
-            - name:
+            - prefix:
                 title: Optional prefix to volume name(s)
             - conffile:
                 title: The volumes conf file
@@ -79,7 +79,7 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- "${conffile}" ${name-}
+            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- "${conffile}" ${prefix-}
 
     rm:
         _info:
@@ -87,7 +87,7 @@ batch:
             desc: |
                 Warning: this will really destroy all volumes and their data!
         _env:
-            - name:
+            - prefix:
                 title: Optional prefix to volume name(s)
             - conffile:
                 title: The volumes conf file
@@ -96,13 +96,13 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" ${name-}
+            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" ${prefix-}
 
     inspect:
         _info:
             title: Check statuses for volumes defined in conf file
         _env:
-            - name:
+            - prefix:
                 title: Optional prefix to volume name(s)
             - conffile:
                 title: The volumes conf file
@@ -111,7 +111,7 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- "${conffile}" ${name-}
+            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- "${conffile}" ${prefix-}
 
 create:
     _info:

@@ -48,7 +48,10 @@ _shebang:
         title: Handle shebang invocations
         desc: |
             In a docker-volumes.conf file you could put
-            #!/usr/bin/space -m docker-volumes /_shebang/
+            For Linux:
+                #!/usr/bin/space -m docker-volumes /_shebang/
+            For OSX/BSD
+                #!/usr/bin/env space ! -m docker-volumes /_shebang/ !
             as the first line to make the yaml file itself runnable.
             Remember to chmod +x it first.
     _env:
@@ -337,9 +340,12 @@ snapshot:
 
 _list:
     @include: docker-volumes|/ls/
+    _info:
+        desc: |
+            Set volumeprefix to filter volumes.
     _env:
         - SPACE_ARGS: -q -|
-        - SPACE_REDIR: "2>/dev/null"
+        - SPACE_REDIR: "|grep \"^${volumeprefix-}\" 2>/dev/null"
         - SPACE_MUTE_EXIT: 1
         - SPACE_LOG_LEVEL: 0
 ...

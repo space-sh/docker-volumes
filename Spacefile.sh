@@ -33,7 +33,7 @@
 #======================
 DOCKER_VOLUMES_DEP_INSTALL()
 {
-    SPACE_SIGNATURE="targetuser"
+    SPACE_SIGNATURE="targetuser:1"
     SPACE_DEP="PRINT OS_IS_INSTALLED DOCKER_INSTALL"
 
     local targetuser="${1}"
@@ -64,7 +64,7 @@ DOCKER_VOLUMES_DEP_INSTALL()
 #======================
 DOCKER_VOLUMES_INSTALL()
 {
-    SPACE_SIGNATURE="targetuser"
+    SPACE_SIGNATURE="targetuser:1"
     SPACE_DEP="PRINT DOCKER_INSTALL"
 
     local targetuser="${1}"
@@ -90,7 +90,7 @@ DOCKER_VOLUMES_INSTALL()
 #=====================
 DOCKER_VOLUMES_CREATE()
 {
-    SPACE_SIGNATURE="name [driver opts label]"
+    SPACE_SIGNATURE="name:1 [driver opts label]"
     SPACE_DEP="PRINT"
 
     local name="${1}"
@@ -128,7 +128,7 @@ DOCKER_VOLUMES_CREATE()
 #======================
 DOCKER_VOLUMES_ENTER()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="name:1"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_ENTER_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
@@ -159,7 +159,7 @@ DOCKER_VOLUMES_ENTER()
 #=============================
 _DOCKER_VOLUMES_ENTER_IMPL()
 {
-    SPACE_SIGNATURE="targetdir"
+    SPACE_SIGNATURE="targetdir:1"
     SPACE_DEP="PRINT"
 
     local targetdir="${1}"
@@ -198,7 +198,7 @@ _DOCKER_VOLUMES_ENTER_IMPL()
 #======================
 DOCKER_VOLUMES_FILELIST()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="name:1"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_FILELIST_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
@@ -229,7 +229,7 @@ DOCKER_VOLUMES_FILELIST()
 #=============================
 _DOCKER_VOLUMES_FILELIST_IMPL()
 {
-    SPACE_SIGNATURE="targetdir"
+    SPACE_SIGNATURE="targetdir:1"
     SPACE_DEP="PRINT"
 
     local targetdir="${1}"
@@ -263,7 +263,7 @@ _DOCKER_VOLUMES_FILELIST_IMPL()
 #=====================
 DOCKER_VOLUMES_CHMOD()
 {
-    SPACE_SIGNATURE="name chmod [chown]"
+    SPACE_SIGNATURE="name:1 chmod:1 [chown]"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_CHMOD_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
@@ -300,7 +300,7 @@ DOCKER_VOLUMES_CHMOD()
 #=====================
 _DOCKER_VOLUMES_CHMOD_IMPL()
 {
-    SPACE_SIGNATURE="targetdir chmod [chown]"
+    SPACE_SIGNATURE="targetdir:1 chmod:1 [chown]"
     SPACE_DEP="PRINT"
 
     local targetdir="${1}"
@@ -339,7 +339,7 @@ _DOCKER_VOLUMES_CHMOD_IMPL()
 #=====================
 DOCKER_VOLUMES_INSPECT()
 {
-    SPACE_SIGNATURE="volume [volume]"
+    SPACE_SIGNATURE="volume:1 [volume]"
     SPACE_DEP="PRINT"
 
     PRINT "Inspect volume(s): $*"
@@ -358,7 +358,7 @@ DOCKER_VOLUMES_INSPECT()
 #=====================
 DOCKER_VOLUMES_RM()
 {
-    SPACE_SIGNATURE="name [name]"
+    SPACE_SIGNATURE="name:1 [name]"
     SPACE_DEP="PRINT"
 
     PRINT "Remove volume(s): $*."
@@ -391,7 +391,7 @@ DOCKER_VOLUMES_LS()
 #=====================
 DOCKER_VOLUMES_EXISTS()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="name:1"
 
     local name="${1}"
     shift
@@ -433,7 +433,7 @@ DOCKER_VOLUMES_EXISTS()
 #=====================
 DOCKER_VOLUMES_RESTORE()
 {
-    SPACE_SIGNATURE="name archive.tar.gz|dir|- [empty preservepermissions]"
+    SPACE_SIGNATURE="name:1 archive:1 [empty preservepermissions]"
     SPACE_FN="_DOCKER_VOLUMES_RESTORE_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
     SPACE_BUILDARGS="${SPACE_ARGS}"
@@ -497,7 +497,7 @@ DOCKER_VOLUMES_RESTORE()
 #=============================
 _DOCKER_VOLUMES_RESTORE_OUTER()
 {
-    SPACE_SIGNATURE="dir"
+    SPACE_SIGNATURE="dir:1"
 
     local dir="${1}"
     shift
@@ -519,7 +519,7 @@ _DOCKER_VOLUMES_RESTORE_OUTER()
 #=====================
 _DOCKER_VOLUMES_RESTORE_IMPL()
 {
-    SPACE_SIGNATURE="targetdir empty preservepermissions"
+    SPACE_SIGNATURE="targetdir:1 empty:1 preservepermissions:1"
     SPACE_DEP="PRINT FILE_GET_PERMISSIONS FILE_RESTORE_PERMISSIONS"
 
     local targetdir="${1}"
@@ -582,7 +582,7 @@ _DOCKER_VOLUMES_RESTORE_IMPL()
 #=====================
 DOCKER_VOLUMES_EMPTY()
 {
-    SPACE_SIGNATURE="name"
+    SPACE_SIGNATURE="name:1"
     SPACE_FN="_DOCKER_VOLUMES_EMPTY_IMPL"
     SPACE_WRAP="DOCKER_RUN_WRAP"
     SPACE_BUILDARGS="${SPACE_ARGS}"
@@ -618,7 +618,7 @@ DOCKER_VOLUMES_EMPTY()
 #=====================
 _DOCKER_VOLUMES_EMPTY_IMPL()
 {
-    SPACE_SIGNATURE="targetdir"
+    SPACE_SIGNATURE="targetdir:1"
     # shellcheck disable=2034
     SPACE_DEP="PRINT"
 
@@ -645,7 +645,7 @@ _DOCKER_VOLUMES_EMPTY_IMPL()
 #=======================
 DOCKER_VOLUMES_SNAPSHOT()
 {
-    SPACE_SIGNATURE="name archive.tar.gz|dir|-"
+    SPACE_SIGNATURE="name:1 archive:1"
     # shellcheck disable=2034
     SPACE_WRAP="DOCKER_RUN_WRAP"
     # shellcheck disable=2034
@@ -703,7 +703,7 @@ DOCKER_VOLUMES_SNAPSHOT()
 _DOCKER_VOLUMES_SNAPSHOT_IMPL()
 {
     # shellcheck disable=2034
-    SPACE_SIGNATURE="targetdir"
+    SPACE_SIGNATURE="targetdir:1"
     # shellcheck disable=2034
     SPACE_DEP="PRINT"
 
@@ -732,7 +732,7 @@ _DOCKER_VOLUMES_SNAPSHOT_IMPL()
 #==============================
 _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
 {
-    SPACE_SIGNATURE="conffile [prefix]"
+    SPACE_SIGNATURE="conffile:1 [prefix]"
     SPACE_DEP="STRING_SUBST CONF_READ"
 
     local conffile="${1}"
@@ -836,7 +836,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
 DOCKER_VOLUMES_BATCH_CREATE()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile [name]"
+    SPACE_SIGNATURE="conffile:1 [name]"
     # shellcheck disable=SC2034
     SPACE_FN="_DOCKER_VOLUMES_BATCH_CREATE_IMPL"
     # shellcheck disable=SC2034
@@ -910,7 +910,7 @@ DOCKER_VOLUMES_BATCH_CREATE()
 #============================
 _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 {
-    SPACE_SIGNATURE="targetdir chmod chown empty archive"
+    SPACE_SIGNATURE="targetdir:1 chmod:1 chown:1 empty:1 archive:1"
     SPACE_DEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
 
     local targetdir="${1}"
@@ -960,7 +960,7 @@ _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 #==============================
 _DOCKER_VOLUMES_OUTER_BATCH_RM()
 {
-    SPACE_SIGNATURE="conffile [prefix]"
+    SPACE_SIGNATURE="conffile:1 [prefix]"
     SPACE_DEP="CONF_READ STRING_SUBST"
 
     local conffile="${1}"
@@ -1030,7 +1030,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
 DOCKER_VOLUMES_BATCH_RM()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile [name]"
+    SPACE_SIGNATURE="conffile:1 [name]"
     # shellcheck disable=SC2034
     SPACE_FN="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
@@ -1072,7 +1072,7 @@ DOCKER_VOLUMES_BATCH_RM()
 _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
 {
     # shellcheck disable=2034
-    SPACE_SIGNATURE="conffile [prefix]"
+    SPACE_SIGNATURE="conffile:1 [prefix]"
     # shellcheck disable=2034
     SPACE_DEP="CONF_READ STRING_SUBST"
 
@@ -1136,7 +1136,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
 DOCKER_VOLUMES_BATCH_INSPECT()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile [name]"
+    SPACE_SIGNATURE="conffile:1 [name]"
     # shellcheck disable=SC2034
     SPACE_FN="DOCKER_VOLUMES_INSPECT"
     # shellcheck disable=SC2034
@@ -1176,7 +1176,7 @@ DOCKER_VOLUMES_BATCH_INSPECT()
 #=============================
 _DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
 {
-    SPACE_SIGNATURE="conffile"
+    SPACE_SIGNATURE="conffile:1"
 
     local conffile="${1}"
     shift
@@ -1213,7 +1213,7 @@ Example:
 DOCKER_VOLUMES_SHEBANG()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile [cmd]"
+    SPACE_SIGNATURE="conffile:1 [cmd]"
     # shellcheck disable=SC2034
     SPACE_FN="NOOP"
     # shellcheck disable=SC2034

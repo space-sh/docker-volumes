@@ -16,6 +16,11 @@
 ---
 _clone:
     @clone: os file docker conf string
+    @include: os|/_clone/
+    @include: file|/_clone/
+    @include: docker|/_clone/
+    @include: conf|/_clone/
+    @include: string|/_clone/
 @include: |/_clone/
 
 _info:
@@ -29,7 +34,8 @@ _dep_install:
             download and install the latest Docker Engine from Docker and
             add the targetuser to the docker group.
     _env:
-        - targetuser: ${targetuser:-${SSHUSER:-$USER}}
+        - targetuser:
+            value: ${targetuser:-$USER}
         - RUN: DOCKER_VOLUMES_DEP_INSTALL -- "${targetuser}"
 
 install:
@@ -40,7 +46,14 @@ install:
             Also adds the targetuser to the docker group.
             Will reinstall if already installed.
     _env:
-        - targetuser: ${targetuser:-${SSHUSER:-$USER}}
+        - targetuser:
+            value: ${targetuser:-$USER}
+        - SPACE_ARGS:
+            arguments:
+                -
+                    title: User
+                    values:
+                        - user
         - RUN: DOCKER_VOLUMES_INSTALL -- "${targetuser}"
 
 _shebang:
@@ -82,7 +95,11 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- "${conffile}" ${prefix-}
+                    -
+                        title: Prefix
+                        values:
+                            - prefix
+            - RUN: DOCKER_VOLUMES_BATCH_CREATE -- "${conffile}" "${prefix}"
 
     rm:
         _info:
@@ -99,7 +116,11 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" ${prefix-}
+                    -
+                        title: Prefix
+                        values:
+                            - prefix
+            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" "${prefix}"
 
     inspect:
         _info:
@@ -114,7 +135,11 @@ batch:
                 arguments:
                     -
                         completion: G
-            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- "${conffile}" ${prefix-}
+                    -
+                        title: Prefix
+                        values:
+                            - prefix
+            - RUN: DOCKER_VOLUMES_BATCH_INSPECT -- "${conffile}" "${prefix}"
 
 create:
     _info:
@@ -130,7 +155,25 @@ create:
             title: Options, optional
         - labels:
             title: Labels, optional
-        - RUN: DOCKER_VOLUMES_CREATE -- "${volume}" ${driver-} ${opts-} ${labels-}
+        - SPACE_ARGS:
+            arguments:
+                -
+                    title: Name of volume
+                    values:
+                        - volumename
+                -
+                    title: Driver of volume
+                    values:
+                        - local
+                -
+                    title: Options for volume driver
+                    values:
+                        - opts
+                -
+                    title: Labels for volume
+                    values:
+                        - labels
+        - RUN: DOCKER_VOLUMES_CREATE -- "${volume}" "${driver}" "${opts}" "${labels}"
 
 chmod:
     @prefix: @{PARENTPATH}
@@ -163,7 +206,7 @@ chmod:
                 -
                     values:
                         - owner
-        - RUN: DOCKER_VOLUMES_CHMOD -- "${volume}" ${chmod-} ${chown-}
+        - RUN: DOCKER_VOLUMES_CHMOD -- "${volume}" "${chmod}" "${chown}"
 
 inspect:
     @prefix: @{PARENTPATH}
@@ -308,7 +351,7 @@ restore:
                     values:
                         - 0
                         - 1
-        - RUN: DOCKER_VOLUMES_RESTORE -- "${volume}" "${archive}" ${rmrf-}
+        - RUN: DOCKER_VOLUMES_RESTORE -- "${volume}" "${archive}" "${rmrf}"
 
 snapshot:
     @prefix: @{PARENTPATH}

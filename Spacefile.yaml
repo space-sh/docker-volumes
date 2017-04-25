@@ -68,10 +68,10 @@ _shebang:
             as the first line to make the yaml file itself runnable.
             Remember to chmod +x it first.
     _env:
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - RUN: DOCKER_VOLUMES_SHEBANG
 batch:
     create:
@@ -82,10 +82,10 @@ batch:
                 defined and optionally populate with data.
                 Warning: this could destroy volumes data!
         _env:
-            - image:
-            - flags:
-            - container:
-            - cmd:
+            - DOCKERIMAGE:
+            - DOCKERFLAGS:
+            - DOCKERCONTAINER:
+            - DOCKERCMD:
             - prefix:
                 title: Optional prefix to volume name(s)
             - conffile:
@@ -247,10 +247,10 @@ filelist:
         - volume:
             title: Name of the volume
             completion: @{prefix}_list/
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - SPACE_ARGS:
             arguments:
                 -
@@ -287,10 +287,10 @@ enter:
         - volume:
             title: Name of the volume
             completion: @{prefix}_list/
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - SPACE_ARGS:
             arguments:
                 -
@@ -306,10 +306,10 @@ empty:
         - volume:
             title: Name of the volume
             completion: @{prefix}_list/
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - SPACE_ARGS:
             arguments:
                 -
@@ -337,10 +337,10 @@ restore:
             values:
                 - 0
                 - 1
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - SPACE_ARGS:
             arguments:
                 -
@@ -369,10 +369,10 @@ snapshot:
         - archive:
             title: tar.gz archive, directory or -
             completion: G
-        - image:
-        - flags:
-        - container:
-        - cmd:
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
         - SPACE_ARGS:
             arguments:
                 -

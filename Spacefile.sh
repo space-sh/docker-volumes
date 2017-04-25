@@ -131,23 +131,23 @@ DOCKER_VOLUMES_ENTER()
     SPACE_SIGNATURE="name:1"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_ENTER_IMPL"
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
     shift
 
     # These variables will get exported.
-    local image="alpine"
-    local flags="-it --rm -v ${name}:/mountvol"
-    local container=
-    local cmd="sh -c"
+    local DOCKERIMAGE="alpine"
+    local DOCKERFLAGS="-it --rm -v ${name}:/mountvol"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     local SPACE_ARGS="\"/mountvol\""
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
 }
 
@@ -201,23 +201,23 @@ DOCKER_VOLUMES_FILELIST()
     SPACE_SIGNATURE="name:1"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_FILELIST_IMPL"
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
     shift
 
     # These variables will get exported.
-    local image="alpine"
-    local flags="-i --rm -v ${name}:/mountvol"
-    local container=
-    local cmd="sh -c"
+    local DOCKERIMAGE="alpine"
+    local DOCKERFLAGS="-i --rm -v ${name}:/mountvol"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     local SPACE_ARGS="\"/mountvol\""
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
 }
 
@@ -266,7 +266,7 @@ DOCKER_VOLUMES_CHMOD()
     SPACE_SIGNATURE="name:1 chmod:1 [chown]"
     # We have to chain to another cmd since we want to wrap it.
     SPACE_FN="_DOCKER_VOLUMES_CHMOD_IMPL"
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
 
     local name="${1}"
@@ -279,16 +279,17 @@ DOCKER_VOLUMES_CHMOD()
     shift $(( $# > 0 ? 1 : 0 ))
 
     # These variables will get exported.
-    local image="alpine"
-    local flags="-i --rm -v ${name}:/mountvol"
-    local container=
-    local cmd="sh -c"
+    local DOCKERIMAGE="alpine"
+    local DOCKERFLAGS="-i --rm -v ${name}:/mountvol"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     local SPACE_ARGS="\"/mountvol\" \"${chmod}\" \"${chown}\""
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
+    YIELD "SPACE_ARGS"
     YIELD "SPACE_ARGS"
 }
 
@@ -435,7 +436,7 @@ DOCKER_VOLUMES_RESTORE()
 {
     SPACE_SIGNATURE="name:1 archive:1 [empty preservepermissions]"
     SPACE_FN="_DOCKER_VOLUMES_RESTORE_IMPL"
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="PRINT"
     SPACE_BUILDENV="CWD"
@@ -455,10 +456,10 @@ DOCKER_VOLUMES_RESTORE()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    local flags="-i --rm -v ${name}:${targetdir}"
-    local image="alpine"
-    local container=
-    local cmd="sh -c"
+    local DOCKERFLAGS="-i --rm -v ${name}:${targetdir}"
+    local DOCKERIMAGE="alpine"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     if [ "${archive}" = "-" ]; then
         if [ -t "0" ]; then
@@ -480,11 +481,10 @@ DOCKER_VOLUMES_RESTORE()
     fi
 
     local SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
-    YIELD "archive"
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
 }
 
@@ -584,7 +584,7 @@ DOCKER_VOLUMES_EMPTY()
 {
     SPACE_SIGNATURE="name:1"
     SPACE_FN="_DOCKER_VOLUMES_EMPTY_IMPL"
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="PRINT"
 
@@ -594,19 +594,19 @@ DOCKER_VOLUMES_EMPTY()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    local image="alpine"
+    local DOCKERIMAGE="alpine"
 
     # This variable will get exported.
-    local flags="-i --rm -v ${name}:${targetdir}"
-    local container=
-    local cmd="sh -c"
+    local DOCKERFLAGS="-i --rm -v ${name}:${targetdir}"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     PRINT "Emptying volume: ${name}."
     local SPACE_ARGS="\"${targetdir}\""
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
 }
 
@@ -647,7 +647,7 @@ DOCKER_VOLUMES_SNAPSHOT()
 {
     SPACE_SIGNATURE="name:1 archive:1"
     # shellcheck disable=2034
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     # shellcheck disable=2034
     SPACE_FN="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
     SPACE_BUILDARGS="${SPACE_ARGS}"
@@ -663,10 +663,10 @@ DOCKER_VOLUMES_SNAPSHOT()
     local targetdir="/tmpmount"
 
     # This variable will get exported.
-    local image="alpine"
-    local flags="-i --rm -v ${name}:${targetdir}"
-    local container=
-    local cmd="sh -c"
+    local DOCKERIMAGE="alpine"
+    local DOCKERFLAGS="-i --rm -v ${name}:${targetdir}"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
 
     if [ "${archive}" = "-" ]; then
         if [ -t 1 ]; then
@@ -687,10 +687,10 @@ DOCKER_VOLUMES_SNAPSHOT()
 
     # shellcheck disable=2034
     local SPACE_ARGS="${targetdir}"
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
 }
 
@@ -840,7 +840,7 @@ DOCKER_VOLUMES_BATCH_CREATE()
     # shellcheck disable=SC2034
     SPACE_FN="_DOCKER_VOLUMES_BATCH_CREATE_IMPL"
     # shellcheck disable=SC2034
-    SPACE_WRAP="DOCKER_RUN_WRAP"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
     # shellcheck disable=SC2034
     SPACE_REDIR="<\$archive"
     # shellcheck disable=SC2034
@@ -872,18 +872,18 @@ DOCKER_VOLUMES_BATCH_CREATE()
 
     # These variables will get exported.
     # shellcheck disable=SC2034
-    local image="alpine"
+    local DOCKERIMAGE="alpine"
     # shellcheck disable=SC2034
-    local container=
-    local flags="{DOCKERFLAGS}"
-    local cmd="sh -c"
+    local DOCKERCONTAINER=
+    local DOCKERFLAGS="{DOCKERFLAGS}"
+    local DOCKERCMD="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in RUNOUTER.
     local SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
-    YIELD "image"
-    YIELD "flags"
-    YIELD "container"
-    YIELD "cmd"
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
     YIELD "SPACE_ARGS"
     YIELD "SPACE_OUTERARGS"
 }

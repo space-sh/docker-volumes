@@ -40,7 +40,7 @@ the volume on creation.
 
 ## create
 
-Deploy volumes batch defined in configuration file, optionally populating the newly mounted volumes with data, overwritting any existing data.
+Deploy volumes batch defined in configuration file, optionally populating the newly mounted volumes with data, overwriting any existing data.
 
 ### Example
 

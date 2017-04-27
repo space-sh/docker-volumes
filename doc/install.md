@@ -6,7 +6,7 @@ weight: 200
 ---
 # Docker-volumes module: Install
 
-Downloads and installs the latest _Docker Engine_, overwritting existing installation.
+Downloads and installs the latest _Docker Engine_, overwriting existing installation.
 
 
 ## Example

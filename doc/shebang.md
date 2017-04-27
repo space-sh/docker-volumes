@@ -10,10 +10,10 @@ You can make your `docker-volumes.conf` file executable by adding a `shebang lin
 line in the YAML file.  
 
 As you might know the shebang line is the first line in a shell script that determines which
-interpretor to run for the script. For Bash scripts it is usually `#!/bin/env bash`.
+interpreter to run for the script. For Bash scripts it is usually `#!/bin/env bash`.
 
 We can add a shebang line that tells the kernel that we want the _Space_ module
-_docker-volumes_ to be the interpretor so it can directly run the conf file.
+_docker-volumes_ to be the interpreter so it can directly run the conf file.
 
 For Linux add this line as the very first line in your `docker-volumes.conf` file:  
 ```sh

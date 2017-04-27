@@ -1,4 +1,4 @@
-# Docker container management. | [![build status](https://gitlab.com/space-sh/docker-volumes/badges/master/build.svg)](https://gitlab.com/space-sh/docker-volumes/commits/master)
+# Docker volumes management. | [![build status](https://gitlab.com/space-sh/docker-volumes/badges/master/build.svg)](https://gitlab.com/space-sh/docker-volumes/commits/master)
 
 
 ## /batch/
@@ -36,7 +36,7 @@
 
 
 ## /inspect/
-	Inspect a volume
+	Check simple status of volume
 
 
 ## /install/
@@ -217,7 +217,7 @@ The implementation for DOCKER\_VOLUMES\_CHMOD.
 Inspect a volume.  
   
 ### Parameters:  
-- $1: volume name  
+- $@: volume(s)  
   
   
   
@@ -251,17 +251,6 @@ Check so that a volume exists.
   
 ### Parameters:  
 - $1: name of volume  
-  
-  
-  
-## DOCKER\_VOLUMES\_INSPECT()  
-  
-  
-  
-Run docker volume inspect  
-  
-### Parameters:  
-- $@: options  
   
   
   

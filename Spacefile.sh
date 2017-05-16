@@ -738,8 +738,8 @@ _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
     # We save the wrapped RUN because we want to alter it in each iteration.
     local RUN_ORIGINAL="${RUN}"
 
-    local conf_lineno=0
-    while [ "${conf_lineno}" -ne "-1" ]; do
+    local out_conf_lineno=0
+    while [ "${out_conf_lineno}" -ne "-1" ]; do
         local name=
         local driver=
         local type=
@@ -966,8 +966,8 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
     # We save the wrapped RUN because we want to alter it in each iteration.
     local RUN_ORIGINAL="${RUN}"
 
-    local conf_lineno=0
-    while [ "${conf_lineno}" -ne "-1" ]; do
+    local out_conf_lineno=0
+    while [ "${out_conf_lineno}" -ne "-1" ]; do
         local name=
         local driver=
         local type=
@@ -1079,8 +1079,8 @@ _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
     # We save the wrapped RUN because we want to alter it in each iteration.
     local RUN_ORIGINAL="${RUN}"
 
-    local conf_lineno=0
-    while [ "${conf_lineno}" -ne "-1" ]; do
+    local out_conf_lineno=0
+    while [ "${out_conf_lineno}" -ne "-1" ]; do
         local name=
 
         if ! CONF_READ "${conffile}" "name"; then

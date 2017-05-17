@@ -86,9 +86,6 @@ installed otherwise install it.
 ### Parameters:  
 - $1: user to add to docker group.  
   
-### Expects:  
-- ${SUDO}: set to "sudo" to run as sudo.  
-  
 ### Returns:  
 - 0: success  
 - 1: failure  
@@ -103,9 +100,6 @@ Install latest Docker and make it available to the user.
   
 ### Parameters:  
 - $1: user to add to docker group.  
-  
-### Expects:  
-- ${SUDO}: set to "sudo" to run as sudo.  
   
 ### Returns:  
 - 0: success  

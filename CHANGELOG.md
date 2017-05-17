@@ -1,5 +1,12 @@
 # Space Module change log - docker-volumes
 
+## [1.0.2 - 2017-05-17]
+
+* Rename expected local OUT variables
+
+- Remove old `SUDO` behavior
+
+
 ## [1.0.1 - 2017-04-26]
 
 * Update auto completion

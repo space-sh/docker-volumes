@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /restore/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/restore.md
 weight: 200
 ---
 # Docker-volumes module: Restore

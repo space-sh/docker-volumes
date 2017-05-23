@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: Shebang
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/shebang.md
 weight: 200
 ---
 # Docker-volumes module: #!shebang

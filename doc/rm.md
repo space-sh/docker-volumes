@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /rm/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/rm.md
 weight: 200
 ---
 # Docker-volumes module: Remove

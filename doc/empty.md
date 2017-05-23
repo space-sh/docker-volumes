@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /empty/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/empty.md
 weight: 200
 ---
 # Docker-volumes module: Empty

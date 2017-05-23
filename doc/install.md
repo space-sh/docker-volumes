@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /install/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/install.md
 weight: 200
 ---
 # Docker-volumes module: Install

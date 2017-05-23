@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /inspect/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/inspect.md
 weight: 200
 ---
 # Docker-volumes module: Inspect

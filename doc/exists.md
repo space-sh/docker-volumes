@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /exists/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/exists.md
 weight: 200
 ---
 # Docker-volumes module: Exists

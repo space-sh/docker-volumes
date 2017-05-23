@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: Overview
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/index.md
 weight: 100
 ---
 # Docker-volumes module

@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /create/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/create.md
 weight: 200
 ---
 # Docker-volumes module: Create

@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /chmod/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/chmod.md
 weight: 200
 ---
 # Docker-volumes module: Change mode

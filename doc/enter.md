@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /enter/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/enter.md
 weight: 200
 ---
 # Docker-volumes module: Enter

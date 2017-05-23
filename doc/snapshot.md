@@ -2,6 +2,7 @@
 modulename: Docker-volumes
 title: /snapshot/
 giturl: gitlab.com/space-sh/docker-volumes
+editurl: /edit/master/doc/snapshot.md
 weight: 200
 ---
 # Docker-volumes module: Snapshot

@@ -29,20 +29,20 @@ For MacOS systems add this line instead:
 Then you need to make the conf file executable:  
 
 ```sh
-$ chmod +x docker-volumes.conf
+chmod +x docker-volumes.conf
 ```
 
 Alright, it should be runnable directly from command line:  
 ```sh
-$ ./docker-volumes.conf -- create
-$ ./docker-volumes.conf -- rm
-$ ./docker-volumes.conf -- inspect
+./docker-volumes.conf -- create
+./docker-volumes.conf -- rm
+./docker-volumes.conf -- inspect
 ```
 
 We can wrap it using the SSH module to have it being deployed remotely:  
 
 ```sh
-$ ./docker-volumes.conf -m ssh /wrap/ -eSSHHOST=address -- create
+./docker-volumes.conf -m ssh /wrap/ -eSSHHOST=address -- create
 ```
 
 It is important to add `-m ssh /wrap/ -eSSHHOST=address` before the double dash `--`.

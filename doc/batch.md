@@ -78,7 +78,7 @@ Exit status code is expected to be 0 on success.
 To manage the volumes on a remote server simply wrap the command using the SSH module.
 
 ```sh
-$ space -m ssh /wrap/ -eSSHHOST=address \
+space -m ssh /wrap/ -eSSHHOST=address \
         -m docker-volumes /batch/inspect/ -- "batch.conf" "myvolumes"
 
 ```

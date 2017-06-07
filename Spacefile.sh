@@ -1175,7 +1175,7 @@ _DOCKER_VOLUMES_SHEBANG_OUTER_HELP()
     local conffile="${1}"
     shift
 
-        printf "%s\n" "This is the SpaceGal wrapper over docker-volumes.
+        printf "%s\n" "This is the Space.sh wrapper over docker-volumes.
 Pass in a COMMAND as: -- command.
     create
     rm

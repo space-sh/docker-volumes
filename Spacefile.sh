@@ -646,6 +646,7 @@ DOCKER_VOLUMES_SNAPSHOT()
     SPACE_FN="_DOCKER_VOLUMES_SNAPSHOT_IMPL"
     SPACE_BUILDARGS="${SPACE_ARGS}"
     SPACE_BUILDDEP="PRINT"
+    # shellcheck disable=2034
     SPACE_BUILDENV="CWD"
 
     local name="${1}"
@@ -869,7 +870,9 @@ DOCKER_VOLUMES_BATCH_CREATE()
     local DOCKERIMAGE="alpine"
     # shellcheck disable=SC2034
     local DOCKERCONTAINER=
+    # shellcheck disable=2034
     local DOCKERFLAGS="{DOCKERFLAGS}"
+    # shellcheck disable=2034
     local DOCKERCMD="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in RUNOUTER.

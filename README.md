@@ -8,6 +8,10 @@
 + inspect
 + rm
 
+## /cat/
+	Cat a file in a volume
+
+
 ## /chmod/
 	Set the permissions and ownership of the mountpoint of a volume.
 
@@ -146,6 +150,32 @@ This command will get wrapped and run inside a temporary container.
   
   
 The implementation for DOCKER\_VOLUMES\_ENTER.  
+  
+  
+  
+## DOCKER\_VOLUMES\_CAT()  
+  
+  
+  
+Enter into a docker container where the  
+volume is mounted and cat a file.  
+  
+This command will get wrapped and run inside a temporary container.  
+  
+### Parameters:  
+- $1: name of volume  
+- $1: path to file, widcards allowed.  
+  
+### Returns:  
+- non-zero on error  
+  
+  
+  
+## \_DOCKER\_VOLUMES\_CAT\_IMPL()  
+  
+  
+  
+The implementation for DOCKER\_VOLUMES\_CAT.  
   
   
   

@@ -247,6 +247,7 @@ filelist:
         - volume:
             title: Name of the volume
             completion: @{prefix}_list/
+            value: blockieorg_OPENRESTY_nginxlog
         - DOCKERIMAGE:
         - DOCKERFLAGS:
         - DOCKERCONTAINER:
@@ -296,6 +297,30 @@ enter:
                 -
                     completion: @{prefix}_list/
         - RUN: DOCKER_VOLUMES_ENTER -- "${volume}"
+
+cat:
+    @prefix: @{PARENTPATH}
+    @dotdot: prefix
+    _info:
+        title: Cat a file in a volume
+    _env:
+        - volume:
+            title: Name of the volume
+            completion: @{prefix}_list/
+        - filepath:
+            title: Relative path to file, wildcards allowed.
+            desc: |
+                Use path in a relative way, since the working
+                dir will be inside the mounted volume.
+        - DOCKERIMAGE:
+        - DOCKERFLAGS:
+        - DOCKERCONTAINER:
+        - DOCKERCMD:
+        - SPACE_ARGS:
+            arguments:
+                -
+                    completion: @{prefix}_list/
+        - RUN: DOCKER_VOLUMES_CAT -- "${volume}" "${filepath}"
 
 empty:
     @prefix: @{PARENTPATH}

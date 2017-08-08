@@ -1,5 +1,10 @@
 # Space Module change log - docker-volumes
 
+## [1.1.0 - 2017-08-08]
+
+* Add /cat/ target
+
+
 ## [1.0.3 - 2017-06-11]
 
 * Update documentation

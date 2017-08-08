@@ -165,12 +165,81 @@ _DOCKER_VOLUMES_ENTER_IMPL()
     fi
 
     # shellcheck disable=2034
-    cd "${targetdir}" &&
+    cd "${targetdir}" || exit 1
+
+    # Hide function name when PRINT
     SPACE_FNNAME=""
-    PRINT "Here we are, behold your volume and all it's files." "ok"
-    PRINT "Changes you make to files will stick." "ok"
+
+    PRINT "Here we are, behold your volume and all it's files." "info"
+    PRINT "Changes you make to files will stick." "warning"
 
     sh
+}
+
+#=======================
+# DOCKER_VOLUMES_CAT
+#
+# Enter into a docker container where the
+# volume is mounted and cat a file.
+#
+# This command will get wrapped and run inside a temporary container.
+#
+# Parameters:
+#   $1: name of volume
+#   $1: path to file, widcards allowed.
+#
+# Returns:
+#   non-zero on error
+#
+#======================
+DOCKER_VOLUMES_CAT()
+{
+    SPACE_SIGNATURE="name:1 filepath:1"
+    # We have to chain to another cmd since we want to wrap it.
+    SPACE_FN="_DOCKER_VOLUMES_CAT_IMPL"
+    SPACE_WRAP="DOCKER_WRAP_RUN"
+    SPACE_BUILDARGS="${SPACE_ARGS}"
+
+    local name="${1}"
+    shift
+
+    local filepath="${1}"
+    shift
+
+    # These variables will get exported.
+    local DOCKERIMAGE="alpine"
+    local DOCKERFLAGS="-i --rm -v ${name}:/mountvol"
+    local DOCKERCONTAINER=
+    local DOCKERCMD="sh -c"
+
+    local SPACE_ARGS="\"/mountvol\" \"${filepath}\""
+    YIELD "DOCKERIMAGE"
+    YIELD "DOCKERFLAGS"
+    YIELD "DOCKERCONTAINER"
+    YIELD "DOCKERCMD"
+    YIELD "SPACE_ARGS"
+}
+
+#=============================
+# _DOCKER_VOLUMES_CAT_IMPL
+#
+# The implementation for DOCKER_VOLUMES_CAT.
+#
+#=============================
+_DOCKER_VOLUMES_CAT_IMPL()
+{
+    SPACE_SIGNATURE="targetdir:1 filepath:1"
+
+    local targetdir="${1}"
+    shift
+
+    local filepath="${1}"
+    shift
+
+    # shellcheck disable=2034
+    cd "${targetdir}" || exit 1
+
+    cat ${filepath}
 }
 
 #=======================

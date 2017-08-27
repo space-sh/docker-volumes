@@ -1059,7 +1059,6 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
         name="${prefix}${name}"
 
         PRINT "Remove volume: ${name}."
-        continue
 
         RUN="${RUN_ORIGINAL}"
         STRING_SUBST "RUN" "{NAME}" "${name}"

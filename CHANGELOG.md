@@ -1,8 +1,13 @@
 # Space Module change log - docker-volumes
 
+## [1.1.1 - 2017-08-28]
+
+- Remove misplaced `continue` statement
+
+
 ## [1.1.0 - 2017-08-08]
 
-* Add /cat/ target
++ Add /cat/ target
 
 
 ## [1.0.3 - 2017-06-11]

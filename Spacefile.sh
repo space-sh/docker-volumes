@@ -1026,11 +1026,14 @@ _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 #==============================
 _DOCKER_VOLUMES_OUTER_BATCH_RM()
 {
-    SPACE_SIGNATURE="conffile:1 [prefix]"
+    SPACE_SIGNATURE="conffile:1 [flags prefix]"
     SPACE_DEP="CONF_READ STRING_SUBST"
 
     local conffile="${1}"
     shift
+
+    local flags="${1-}"
+    shift $(( $# > 0 ? 1 : 0 ))
 
     local prefix="${1-}"
     shift $(( $# > 0 ? 1 : 0 ))
@@ -1051,14 +1054,12 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
         if [ -z "${name}" ]; then
             continue
         fi
-        if [ "${type}" = "persistent" ]; then
+        if [ "${type}" = "persistent" ] && [ "${flags}" != "-f" ]; then
             PRINT "Skipping persistent volume: ${name}"
             continue
         fi
 
         name="${prefix}${name}"
-
-        PRINT "Remove volume: ${name}."
 
         RUN="${RUN_ORIGINAL}"
         STRING_SUBST "RUN" "{NAME}" "${name}"
@@ -1095,7 +1096,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_RM()
 DOCKER_VOLUMES_BATCH_RM()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile:1 [name]"
+    SPACE_SIGNATURE="conffile:1 [flags name]"
     # shellcheck disable=SC2034
     SPACE_FN="DOCKER_VOLUMES_RM"
     # shellcheck disable=SC2034
@@ -1106,6 +1107,9 @@ DOCKER_VOLUMES_BATCH_RM()
 
     local conffile="${1}"
     shift
+
+    local flags="${1-}"
+    shift $(( $# > 0 ? 1 : 0 ))
 
     local name=""
     if [ ! "${1+set}" = "set" ]; then
@@ -1123,7 +1127,7 @@ DOCKER_VOLUMES_BATCH_RM()
     fi
     name="${name:+${name}_}"
 
-    local SPACE_OUTERARGS="\"${conffile}\" \"${name}\""
+    local SPACE_OUTERARGS="\"${conffile}\" \"${flags}\" \"${name}\""
     YIELD "SPACE_OUTERARGS"
 }
 
@@ -1278,7 +1282,7 @@ Example:
 DOCKER_VOLUMES_SHEBANG()
 {
     # shellcheck disable=SC2034
-    SPACE_SIGNATURE="conffile:1 [cmd]"
+    SPACE_SIGNATURE="conffile:1 [cmd flags]"
     # shellcheck disable=SC2034
     SPACE_FN="NOOP"
     # shellcheck disable=SC2034
@@ -1289,6 +1293,9 @@ DOCKER_VOLUMES_SHEBANG()
     shift
 
     local cmd="${1:-help}"
+    shift $(( $# > 0 ? 1 : 0 ))
+
+    local flags="${1:-}"
     shift $(( $# > 0 ? 1 : 0 ))
 
     if [ "${cmd}" = "help" ]; then
@@ -1304,7 +1311,7 @@ DOCKER_VOLUMES_SHEBANG()
         local SPACE_ARGS="\"${conffile}\""
     elif [ "${cmd}" = "rm" ]; then
         local SPACE_FN="DOCKER_VOLUMES_BATCH_RM"
-        local SPACE_ARGS="\"${conffile}\""
+        local SPACE_ARGS="\"${conffile}\" \"${flags}\""
     elif [ "${cmd}" = "inspect" ]; then
         local SPACE_FN="DOCKER_VOLUMES_BATCH_INSPECT"
         local SPACE_ARGS="\"${conffile}\""

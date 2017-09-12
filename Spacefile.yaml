@@ -109,6 +109,8 @@ batch:
         _env:
             - prefix:
                 title: Optional prefix to volume name(s)
+            - rmflags:
+                title: Set to -f to also remove persistent volumes
             - conffile:
                 title: The volumes conf file
                 completion: G
@@ -117,10 +119,14 @@ batch:
                     -
                         completion: G
                     -
+                        title: Flags
+                        values:
+                            - -f
+                    -
                         title: Prefix
                         values:
                             - prefix
-            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" "${prefix}"
+            - RUN: DOCKER_VOLUMES_BATCH_RM -- "${conffile}" "${rmflags}" "${prefix}"
 
     inspect:
         _info:

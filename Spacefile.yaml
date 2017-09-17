@@ -111,6 +111,8 @@ batch:
                 title: Optional prefix to volume name(s)
             - rmflags:
                 title: Set to -f to also remove persistent volumes
+                values:
+                    - -f
             - conffile:
                 title: The volumes conf file
                 completion: G
@@ -253,7 +255,6 @@ filelist:
         - volume:
             title: Name of the volume
             completion: @{prefix}_list/
-            value: blockieorg_OPENRESTY_nginxlog
         - DOCKERIMAGE:
         - DOCKERFLAGS:
         - DOCKERCONTAINER:
@@ -368,6 +369,16 @@ restore:
             values:
                 - 0
                 - 1
+        - preservepermissions:
+            title: set to 1 to preserve permissions of existing file
+            values:
+                - 0
+                - 1
+        - overwrite:
+            title: set to 1 to allow overwriting if files present
+            values:
+                - 0
+                - 1
         - DOCKERIMAGE:
         - DOCKERFLAGS:
         - DOCKERCONTAINER:
@@ -382,7 +393,15 @@ restore:
                     values:
                         - 0
                         - 1
-        - RUN: DOCKER_VOLUMES_RESTORE -- "${volume}" "${archive}" "${rmrf}"
+                -
+                    values:
+                        - 0
+                        - 1
+                -
+                    values:
+                        - 0
+                        - 1
+        - RUN: DOCKER_VOLUMES_RESTORE -- "${volume}" "${archive}" "${rmrf}" "${preservepermissions}" "${overwrite}"
 
 snapshot:
     @prefix: @{PARENTPATH}

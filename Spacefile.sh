@@ -59,7 +59,7 @@ DOCKER_VOLUMES_DEP_INSTALL()
 DOCKER_VOLUMES_INSTALL()
 {
     SPACE_SIGNATURE="targetuser:1"
-    SPACE_DEP="PRINT DOCKER_INSTALL"
+    SPACE_DEP="DOCKER_INSTALL"
 
     local targetuser="${1}"
     shift
@@ -497,7 +497,7 @@ DOCKER_VOLUMES_EXISTS()
 #=====================
 DOCKER_VOLUMES_RESTORE()
 {
-    SPACE_SIGNATURE="name:1 archive:1 [empty preservepermissions]"
+    SPACE_SIGNATURE="name:1 archive:1 [empty preservepermissions overwrite]"
     SPACE_FN="_DOCKER_VOLUMES_RESTORE_IMPL"
     SPACE_WRAP="DOCKER_WRAP_RUN"
     SPACE_BUILDARGS="${SPACE_ARGS}"
@@ -514,6 +514,9 @@ DOCKER_VOLUMES_RESTORE()
     shift $(( $# > 0 ? 1 : 0 ))
 
     local preservepermissions="${1:-1}"
+    shift $(( $# > 0 ? 1 : 0 ))
+
+    local overwrite="${1:-0}"
     shift $(( $# > 0 ? 1 : 0 ))
 
     local targetdir="/tmpmount"
@@ -543,7 +546,7 @@ DOCKER_VOLUMES_RESTORE()
         fi
     fi
 
-    local SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\""
+    local SPACE_ARGS="\"${targetdir}\" \"${empty}\" \"${preservepermissions}\" \"${overwrite}\""
     YIELD "DOCKERIMAGE"
     YIELD "DOCKERFLAGS"
     YIELD "DOCKERCONTAINER"
@@ -561,6 +564,7 @@ DOCKER_VOLUMES_RESTORE()
 _DOCKER_VOLUMES_RESTORE_OUTER()
 {
     SPACE_SIGNATURE="dir:1"
+    SPACE_DEP="PRINT"
 
     local dir="${1}"
     shift
@@ -582,7 +586,7 @@ _DOCKER_VOLUMES_RESTORE_OUTER()
 #=====================
 _DOCKER_VOLUMES_RESTORE_IMPL()
 {
-    SPACE_SIGNATURE="targetdir:1 empty:1 preservepermissions:1"
+    SPACE_SIGNATURE="targetdir empty preservepermissions overwrite"
     SPACE_DEP="PRINT FILE_GET_PERMISSIONS FILE_RESTORE_PERMISSIONS"
 
     local targetdir="${1}"
@@ -592,6 +596,9 @@ _DOCKER_VOLUMES_RESTORE_IMPL()
     shift
 
     local preservepermissions="${1}"
+    shift
+
+    local overwrite="${1}"
     shift
 
     if [ -t "0" ]; then
@@ -607,6 +614,16 @@ _DOCKER_VOLUMES_RESTORE_IMPL()
     if [ "${empty}" = "1" ]; then
         PRINT "Emptying volume."
         rm -rf "${targetdir:?}/"* 2>/dev/null
+    fi
+
+    if [ "${overwrite}" != "1" ]; then
+        # Check for any files and abort if any found.
+        local list=
+        list=$(ls "${targetdir:?}/"* 2>/dev/null)
+        if [ -n "${list}" ]; then
+            PRINT "Volume is not empty, aborting restore since overwrite=0" "error"
+            return 1
+        fi
     fi
 
     local permissions=
@@ -797,7 +814,7 @@ _DOCKER_VOLUMES_SNAPSHOT_IMPL()
 _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
 {
     SPACE_SIGNATURE="conffile:1 [prefix]"
-    SPACE_DEP="STRING_SUBST CONF_READ"
+    SPACE_DEP="STRING_SUBST CONF_READ PRINT"
 
     local conffile="${1}"
     shift
@@ -817,8 +834,9 @@ _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
         local chmod=
         local chown=
         local empty=
+        local overwrite=
 
-        if ! CONF_READ "${conffile}" "name driver type archive chmod chown empty"; then
+        if ! CONF_READ "${conffile}" "name driver type archive chmod chown empty overwrite"; then
             PRINT "Could not read conf file: ${conffile}." "error"
             return 1
         fi
@@ -860,6 +878,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_CREATE()
         STRING_SUBST "RUN" "{CHMOD}" "${chmod}"
         STRING_SUBST "RUN" "{CHOWN}" "${chown}"
         STRING_SUBST "RUN" "{EMPTY}" "${empty}"
+        STRING_SUBST "RUN" "{OVERWRITE}" "${overwrite}"
         STRING_SUBST "RUN" "{ARCHIVE}" "${usearchive}"
 
         _RUN_
@@ -945,7 +964,7 @@ DOCKER_VOLUMES_BATCH_CREATE()
     local DOCKERCMD="sh -c"
 
     # These arguments will get substituted by STRING_SUBST in RUNOUTER.
-    local SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\""
+    local SPACE_ARGS="\"{TARGETDIR}\" \"{CHMOD}\" \"{CHOWN}\" \"{EMPTY}\" \"{ARCHIVE}\" \"{OVERWRITE}\""
     YIELD "DOCKERIMAGE"
     YIELD "DOCKERFLAGS"
     YIELD "DOCKERCONTAINER"
@@ -976,8 +995,8 @@ DOCKER_VOLUMES_BATCH_CREATE()
 #============================
 _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 {
-    SPACE_SIGNATURE="targetdir:1 chmod:1 chown:1 empty:1 archive:1"
-    SPACE_DEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL"
+    SPACE_SIGNATURE="targetdir chmod chown empty archive overwrite"
+    SPACE_DEP="_DOCKER_VOLUMES_CHMOD_IMPL _DOCKER_VOLUMES_RESTORE_IMPL PRINT"
 
     local targetdir="${1}"
     shift
@@ -992,6 +1011,9 @@ _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
     shift
 
     local archive="${1}"
+    shift
+
+    local overwrite="${1}"
     shift
 
     if [ -n "${_chmod}" ] || [ -n "${_chown}" ]; then
@@ -1009,8 +1031,18 @@ _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
         fi
     fi
 
+    if [ "${overwrite}" != "1" ]; then
+        # Check for any files and abort if any found.
+        local list=
+        list=$(ls "${targetdir:?}/"* 2>/dev/null)
+        if [ -n "${list}" ]; then
+            PRINT "Volume is not empty, aborting restore since overwrite=0" "error"
+            return 1
+        fi
+    fi
+
     if [ "${archive}" -eq 1 ]; then
-        _DOCKER_VOLUMES_RESTORE_IMPL "${targetdir}" "" "true"
+        _DOCKER_VOLUMES_RESTORE_IMPL "${targetdir}" "" "true" "${overwrite}"
         if [ "$?" -gt 0 ]; then
             return 1
         fi
@@ -1027,7 +1059,7 @@ _DOCKER_VOLUMES_BATCH_CREATE_IMPL()
 _DOCKER_VOLUMES_OUTER_BATCH_RM()
 {
     SPACE_SIGNATURE="conffile:1 [flags prefix]"
-    SPACE_DEP="CONF_READ STRING_SUBST"
+    SPACE_DEP="CONF_READ STRING_SUBST PRINT"
 
     local conffile="${1}"
     shift
@@ -1143,7 +1175,7 @@ _DOCKER_VOLUMES_OUTER_BATCH_INSPECT()
     # shellcheck disable=2034
     SPACE_SIGNATURE="conffile:1 [prefix]"
     # shellcheck disable=2034
-    SPACE_DEP="CONF_READ STRING_SUBST"
+    SPACE_DEP="CONF_READ STRING_SUBST PRINT"
 
     local conffile="${1}"
     shift

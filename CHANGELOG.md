@@ -1,5 +1,12 @@
 # Space Module change log - docker-volumes
 
+## [1.2.0 - 2017-09-27]
+
++ Add `-f` flag for `/rm/`
+
++ Add overwrite flag for recreating volumes
+
+
 ## [1.1.1 - 2017-08-28]
 
 - Remove misplaced `continue` statement

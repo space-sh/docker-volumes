@@ -168,6 +168,7 @@ _DOCKER_VOLUMES_ENTER_IMPL()
     cd "${targetdir}" || exit 1
 
     # Hide function name when PRINT
+    # shellcheck disable=2034
     SPACE_FNNAME=""
 
     PRINT "Here we are, behold your volume and all it's files." "info"

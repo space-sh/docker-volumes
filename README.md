@@ -1,4 +1,4 @@
-# Docker volumes management. | [![build status](https://gitlab.com/space-sh/docker-volumes/badges/master/build.svg)](https://gitlab.com/space-sh/docker-volumes/commits/master)
+# Docker volumes management. | [![build status](https://gitlab.com/space-sh/docker-volumes/badges/master/pipeline.svg)](https://gitlab.com/space-sh/docker-volumes/commits/master)
 
 
 ## /batch/
